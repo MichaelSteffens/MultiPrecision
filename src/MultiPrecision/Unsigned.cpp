@@ -562,12 +562,11 @@ Unsigned& Unsigned::shiftLeftBy(std::size_t bits)
 	return *this;
 }
 
-Unsigned Unsigned::shiftedLeftBy(std::size_t bits)
+Unsigned Unsigned::shiftedLeftBy(std::size_t bits) const
 {
 	Unsigned result;
 	shiftDigitsLeft(digits, bits, result.digits);
 	result.normalize();
-	std::cerr << *this << ".shiftedLeftBy(" << bits << ")=" << result << std::endl;
 	return result;
 }
 
@@ -604,7 +603,7 @@ Unsigned& Unsigned::shiftRightBy(std::size_t bits)
 	return *this;
 }
 
-Unsigned Unsigned::shiftedRightBy(std::size_t bits)
+Unsigned Unsigned::shiftedRightBy(std::size_t bits) const
 {
 	Unsigned result;
 	shiftDigitsRight<false>(digits, bits, result.digits);
@@ -612,9 +611,87 @@ Unsigned Unsigned::shiftedRightBy(std::size_t bits)
 	return result;
 }
 
-void Unsigned::assign(std::vector<DigitType>::const_iterator start, std::vector<DigitType>::const_iterator end)
+void Unsigned::fromDecimal(std::string::const_iterator first, std::string::const_iterator last)
 {
-	digits.assign(start, end);
+	digits.clear();
+	for (std::string::const_iterator i = first; i != last; ++i) {
+		if (*i >= '0' && *i <= '9') {
+			*this = times(10).add(*i - '0');
+		} else {
+			throw Error("Unsigned::fromDecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
+		}
+	}
+}
+
+void Unsigned::fromHexadecimal(std::string::const_iterator first, std::string::const_iterator last)
+{
+	digits.clear();
+	for (std::string::const_iterator i = first; i != last; ++i) {
+		if (*i >= '0' && *i <= '9') {
+			shiftLeftBy(4).add(*i - '0');
+		} else if (*i >= 'a' && *i <= 'f') {
+			shiftLeftBy(4).add(*i - 'a' + 10);
+		} else {
+			throw Error("Unsigned::fromHexadecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
+		}
+	}
+}
+
+void Unsigned::fromOctal(std::string::const_iterator first, std::string::const_iterator last)
+{
+	digits.clear();
+	for (std::string::const_iterator i = first; i != last; ++i) {
+		if (*i >= '0' && *i <= '7') {
+			shiftLeftBy(3).add(*i - '0');
+		} else {
+			throw Error("Unsigned::fromOctal(std::string::const_iterator, std::string::const_iterator): invalid character");
+		}
+	}
+}
+
+std::string Unsigned::toDecimalString() const
+{
+	std::vector<char> buffer;
+	DivisionResult divisionResult = dividedBy(10);
+	buffer.push_back(divisionResult.remainder.digits.empty() ? '0' : divisionResult.remainder.digits.front() + '0');
+	while (!divisionResult.quotient.digits.empty()) {
+		divisionResult = divisionResult.quotient.dividedBy(10);
+		buffer.push_back(divisionResult.remainder.digits.empty() ? '0' : divisionResult.remainder.digits.front() + '0');
+	}
+	return std::string(buffer.rbegin(), buffer.rend());
+}
+
+std::string Unsigned::toHexadecimalString() const
+{
+	std::vector<char> buffer;
+	DigitType remainder = digits.empty() ? 0 : digits.front() & 0xf;
+	Unsigned quotient = shiftedRightBy(4);
+	buffer.push_back(remainder < 10 ? '0' + remainder : 'a' + remainder - 10);
+	while (!quotient.digits.empty()) {
+		remainder = quotient.digits.empty() ? 0 : quotient.digits.front() & 0xf;
+		quotient.shiftRightBy(4);
+		buffer.push_back(remainder < 10 ? '0' + remainder : 'a' + remainder - 10);
+	}
+	return std::string(buffer.rbegin(), buffer.rend());
+}
+
+std::string Unsigned::toOctalString() const
+{
+	std::vector<char> buffer;
+	DigitType remainder = digits.empty() ? 0 : digits.front() & 0x7;
+	Unsigned quotient = shiftedRightBy(3);
+	buffer.push_back('0' + remainder);
+	while (!quotient.digits.empty()) {
+		remainder = quotient.digits.empty() ? 0 : quotient.digits.front() & 0x7;
+		quotient.shiftRightBy(3);
+		buffer.push_back('0' + remainder);
+	}
+	return std::string(buffer.rbegin(), buffer.rend());
+}
+
+void Unsigned::assign(std::vector<DigitType>::const_iterator first, std::vector<DigitType>::const_iterator last)
+{
+	digits.assign(first, last);
 }
 
 bool Unsigned::subtractAndTestNegative(const Unsigned& other)

@@ -8,6 +8,7 @@
 #ifndef MultiPrecision_Unsigned_INCLUDED
 #define MultiPrecision_Unsigned_INCLUDED
 
+#include <string>
 #include <vector>
 
 namespace MultiPrecision {
@@ -43,16 +44,22 @@ public:
 	Unsigned times(DigitType factor) const;
 	DivisionResult dividedBy(const Unsigned& other) const;
 	DivisionResult dividedBy(DigitType other) const;
-	Unsigned shiftedLeftBy(std::size_t bits);
+	Unsigned shiftedLeftBy(std::size_t bits) const;
 	Unsigned& shiftLeftBy(std::size_t bits);
-	Unsigned shiftedRightBy(std::size_t bits);
+	Unsigned shiftedRightBy(std::size_t bits) const;
 	Unsigned& shiftRightBy(std::size_t bits);
+	void fromDecimal(std::string::const_iterator first, std::string::const_iterator last);
+	void fromHexadecimal(std::string::const_iterator first, std::string::const_iterator last);
+	void fromOctal(std::string::const_iterator first, std::string::const_iterator last);
+	std::string toDecimalString() const;
+	std::string toHexadecimalString() const;
+	std::string toOctalString() const;
 
 private:
 	class DivisionByUnsigned;
 	class DivisionByDigitType;
 
-	void assign(std::vector<DigitType>::const_iterator start, std::vector<DigitType>::const_iterator end);
+	void assign(std::vector<DigitType>::const_iterator first, std::vector<DigitType>::const_iterator last);
 	bool subtractAndTestNegative(const Unsigned& other);
 	void normalize();
 
