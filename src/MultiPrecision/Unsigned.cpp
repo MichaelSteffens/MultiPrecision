@@ -48,23 +48,46 @@ Unsigned& Unsigned::operator=(Unsigned&& other)
 	return *this;
 }
 
-Unsigned::Unsigned(unsigned long long n)
+// Unsigned::Unsigned(unsigned long long n)
+// {
+// 	while (n) {
+// 		DigitType digit = n & std::numeric_limits<DigitType>::max();
+// 		digits.push_back(digit);
+// 		n >>= std::numeric_limits<DigitType>::digits;
+// 	}
+// }
+
+Unsigned::Unsigned(const char* number) : Unsigned(std::string(number))
 {
-	while (n) {
-		DigitType digit = n & std::numeric_limits<DigitType>::max();
-		digits.push_back(digit);
-		n >>= std::numeric_limits<DigitType>::digits;
+}
+
+Unsigned::Unsigned(const std::string& number) : Unsigned(number.begin(), number.end())
+{
+}
+
+Unsigned::Unsigned(std::string::const_iterator first, std::string::const_iterator last)
+{
+	if (first != last) {
+		if (*first != '0') {
+			*this = fromDecimal(first, last);
+		} else if (++first != last) {
+			if (*first != 'x') {
+				*this = fromOctal(first, last);
+			} else if (++first != last) {
+				*this = fromHexadecimal(first, last);
+			}
+		}
 	}
 }
 
-Unsigned::operator unsigned long long() const
-{
-	unsigned long long result = 0;
-	for (auto i = digits.rbegin(); i != digits.rend(); ++i) {
-		result = (result << std::numeric_limits<DigitType>::digits) | *i;
-	}
-	return result;
-}
+// Unsigned::operator unsigned long long() const
+// {
+// 	unsigned long long result = 0;
+// 	for (auto i = digits.rbegin(); i != digits.rend(); ++i) {
+// 		result = (result << std::numeric_limits<DigitType>::digits) | *i;
+// 	}
+// 	return result;
+// }
 
 // Unsigned::operator bool()
 // {
