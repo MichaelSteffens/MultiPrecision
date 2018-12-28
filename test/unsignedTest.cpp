@@ -208,11 +208,11 @@ TEST_CASE("Convert to octal string", "[unsigned]")
 TEST_CASE("Operator ==", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe");
-	SECTION("Equal LHS")
+	SECTION("LHS equal")
 	{
 		REQUIRE(testee == "0xfeedbabe");
 	}
-	SECTION("Not equal LHS")
+	SECTION("LHS not equal LHS")
 	{
 		REQUIRE_FALSE(testee == "0xbabefeed");
 	}
@@ -229,11 +229,11 @@ TEST_CASE("Operator ==", "[unsigned]")
 TEST_CASE("Operator !=", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe");
-	SECTION("Equal LHS")
+	SECTION("LHS equal")
 	{
 		REQUIRE_FALSE(testee != "0xfeedbabe");
 	}
-	SECTION("Not equal LHS")
+	SECTION("LHS not equal")
 	{
 		REQUIRE(testee != "0xbabefeed");
 	}
@@ -244,5 +244,121 @@ TEST_CASE("Operator !=", "[unsigned]")
 	SECTION("Not equal RHS")
 	{
 		REQUIRE("0xbabefeed" != testee);
+	}
+}
+
+TEST_CASE("Operator <", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabe");
+	SECTION("LHS less than")
+	{
+		REQUIRE(testee < "0xfeedbabf");
+	}
+	SECTION("LHS equal")
+	{
+		REQUIRE_FALSE(testee < "0xfeedbabe");
+	}
+	SECTION("LHS greater than")
+	{
+		REQUIRE_FALSE(testee < "0xfeedbabd");
+	}
+	SECTION("Less than RHS")
+	{
+		REQUIRE("0xfeedbabd" < testee);
+	}
+	SECTION("Equal RHS")
+	{
+		REQUIRE_FALSE("0xfeedbabe" < testee);
+	}
+	SECTION("Greater than RHS")
+	{
+		REQUIRE_FALSE("0xfeedbabf" < testee);
+	}
+}
+
+TEST_CASE("Operator <=", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabe");
+	SECTION("LHS less than")
+	{
+		REQUIRE(testee <= "0xfeedbabf");
+	}
+	SECTION("LHS equal")
+	{
+		REQUIRE(testee <= "0xfeedbabe");
+	}
+	SECTION("LHS greater than")
+	{
+		REQUIRE_FALSE(testee <= "0xfeedbabd");
+	}
+	SECTION("Less than RHS")
+	{
+		REQUIRE("0xfeedbabd" <= testee);
+	}
+	SECTION("Equal RHS")
+	{
+		REQUIRE("0xfeedbabe" <= testee);
+	}
+	SECTION("Greater than RHS")
+	{
+		REQUIRE_FALSE("0xfeedbabf" <= testee);
+	}
+}
+
+TEST_CASE("Operator >", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabe");
+	SECTION("LHS less than")
+	{
+		REQUIRE_FALSE(testee > "0xfeedbabf");
+	}
+	SECTION("LHS equal")
+	{
+		REQUIRE_FALSE(testee > "0xfeedbabe");
+	}
+	SECTION("LHS greater than")
+	{
+		REQUIRE(testee > "0xfeedbabd");
+	}
+	SECTION("Less than RHS")
+	{
+		REQUIRE_FALSE("0xfeedbabd" > testee);
+	}
+	SECTION("Equal RHS")
+	{
+		REQUIRE_FALSE("0xfeedbabe" > testee);
+	}
+	SECTION("Greater than RHS")
+	{
+		REQUIRE("0xfeedbabf" > testee);
+	}
+}
+
+TEST_CASE("Operator >=", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabe");
+	SECTION("LHS less than")
+	{
+		REQUIRE_FALSE(testee >= "0xfeedbabf");
+	}
+	SECTION("LHS equal")
+	{
+		REQUIRE(testee >= "0xfeedbabe");
+	}
+	SECTION("LHS greater than")
+	{
+		REQUIRE(testee >= "0xfeedbabd");
+	}
+	SECTION("Less than RHS")
+	{
+		REQUIRE_FALSE("0xfeedbabd" >= testee);
+	}
+	SECTION("Equal RHS")
+	{
+		REQUIRE("0xfeedbabe" >= testee);
+	}
+	SECTION("Greater than RHS")
+	{
+		REQUIRE("0xfeedbabf" >= testee);
 	}
 }
