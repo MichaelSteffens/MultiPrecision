@@ -121,14 +121,12 @@ TEST_CASE("Convert decimal string", "[unsigned]")
 	SECTION("Zero")
 	{
 		std::string zero("0");
-		testee.fromDecimal(zero.begin(), zero.end());
-		REQUIRE(testee == 0ULL);
+		REQUIRE(MultiPrecision::Unsigned::fromDecimal(zero.begin(), zero.end()) == 0ULL);
 	}
 	SECTION("Large number")
 	{
 		std::string number("12345678901234567890");
-		testee.fromDecimal(number.begin(), number.end());
-		REQUIRE(testee == 12345678901234567890ULL);
+		REQUIRE(MultiPrecision::Unsigned::fromDecimal(number.begin(), number.end()) == 12345678901234567890ULL);
 	}
 }
 
@@ -138,14 +136,12 @@ TEST_CASE("Convert hexadecimal string", "[unsigned]")
 	SECTION("Zero")
 	{
 		std::string zero("0");
-		testee.fromHexadecimal(zero.begin(), zero.end());
-		REQUIRE(testee == 0x0ULL);
+		REQUIRE(MultiPrecision::Unsigned::fromHexadecimal(zero.begin(), zero.end()) == 0x0ULL);
 	}
 	SECTION("Large number")
 	{
 		std::string number("feedbabefeedbabe");
-		testee.fromHexadecimal(number.begin(), number.end());
-		REQUIRE(testee == 0xfeedbabefeedbabeULL);
+		REQUIRE(MultiPrecision::Unsigned::fromHexadecimal(number.begin(), number.end()) == 0xfeedbabefeedbabeULL);
 	}
 }
 
@@ -155,14 +151,12 @@ TEST_CASE("Convert octal string", "[unsigned]")
 	SECTION("Zero")
 	{
 		std::string zero("0");
-		testee.fromOctal(zero.begin(), zero.end());
-		REQUIRE(testee == 0ULL);
+		REQUIRE(MultiPrecision::Unsigned::fromOctal(zero.begin(), zero.end()) == 0ULL);
 	}
 	SECTION("Large number")
 	{
 		std::string number("1234567012345670");
-		testee.fromOctal(number.begin(), number.end());
-		REQUIRE(testee == 01234567012345670ULL);
+		REQUIRE(MultiPrecision::Unsigned::fromOctal(number.begin(), number.end()) == 01234567012345670ULL);
 	}
 }
 

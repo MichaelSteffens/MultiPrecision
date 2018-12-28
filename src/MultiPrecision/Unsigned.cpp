@@ -407,7 +407,7 @@ private:
 
 	void multiplyAndSubtract(std::size_t i)
 	{
-		remainderFragment.assign(remainder.digits.begin() + i, remainder.digits.end());
+		remainderFragment.digits.assign(remainder.digits.begin() + i, remainder.digits.end());
 		if (remainderFragment.subtractAndTestNegative(divisor.times(trialQuotient))) {
 			addBack(i);
 		}
@@ -482,7 +482,7 @@ private:
 
 	void multiplyAndSubtract(std::size_t i)
 	{
-		remainderFragment.assign(remainder.digits.begin() + i, remainder.digits.end());
+		remainderFragment.digits.assign(remainder.digits.begin() + i, remainder.digits.end());
 		remainderFragment.subtract(divisor * quotient.digits[i]);
 		remainder.digits.resize(i);
 		remainder.digits.insert(remainder.digits.end(), remainderFragment.digits.begin(), remainderFragment.digits.end());
@@ -611,42 +611,45 @@ Unsigned Unsigned::shiftedRightBy(std::size_t bits) const
 	return result;
 }
 
-void Unsigned::fromDecimal(std::string::const_iterator first, std::string::const_iterator last)
+Unsigned Unsigned::fromDecimal(std::string::const_iterator first, std::string::const_iterator last)
 {
-	digits.clear();
+	Unsigned result;
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '9') {
-			*this = times(10).add(*i - '0');
+			result = result.times(10).add(*i - '0');
 		} else {
 			throw Error("Unsigned::fromDecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
 		}
 	}
+	return result;
 }
 
-void Unsigned::fromHexadecimal(std::string::const_iterator first, std::string::const_iterator last)
+Unsigned Unsigned::fromHexadecimal(std::string::const_iterator first, std::string::const_iterator last)
 {
-	digits.clear();
+	Unsigned result;
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '9') {
-			shiftLeftBy(4).add(*i - '0');
+			result.shiftLeftBy(4).add(*i - '0');
 		} else if (*i >= 'a' && *i <= 'f') {
-			shiftLeftBy(4).add(*i - 'a' + 10);
+			result.shiftLeftBy(4).add(*i - 'a' + 10);
 		} else {
 			throw Error("Unsigned::fromHexadecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
 		}
 	}
+	return result;
 }
 
-void Unsigned::fromOctal(std::string::const_iterator first, std::string::const_iterator last)
+Unsigned Unsigned::fromOctal(std::string::const_iterator first, std::string::const_iterator last)
 {
-	digits.clear();
+	Unsigned result;
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '7') {
-			shiftLeftBy(3).add(*i - '0');
+			result.shiftLeftBy(3).add(*i - '0');
 		} else {
 			throw Error("Unsigned::fromOctal(std::string::const_iterator, std::string::const_iterator): invalid character");
 		}
 	}
+	return result;
 }
 
 std::string Unsigned::toDecimalString() const
@@ -687,11 +690,6 @@ std::string Unsigned::toOctalString() const
 		buffer.push_back('0' + remainder);
 	}
 	return std::string(buffer.rbegin(), buffer.rend());
-}
-
-void Unsigned::assign(std::vector<DigitType>::const_iterator first, std::vector<DigitType>::const_iterator last)
-{
-	digits.assign(first, last);
 }
 
 bool Unsigned::subtractAndTestNegative(const Unsigned& other)
