@@ -48,15 +48,6 @@ Unsigned& Unsigned::operator=(Unsigned&& other)
 	return *this;
 }
 
-// Unsigned::Unsigned(unsigned long long n)
-// {
-// 	while (n) {
-// 		DigitType digit = n & std::numeric_limits<DigitType>::max();
-// 		digits.push_back(digit);
-// 		n >>= std::numeric_limits<DigitType>::digits;
-// 	}
-// }
-
 Unsigned::Unsigned(const char* number) : Unsigned(std::string(number))
 {
 }
@@ -79,21 +70,6 @@ Unsigned::Unsigned(std::string::const_iterator first, std::string::const_iterato
 		}
 	}
 }
-
-// Unsigned::operator unsigned long long() const
-// {
-// 	unsigned long long result = 0;
-// 	for (auto i = digits.rbegin(); i != digits.rend(); ++i) {
-// 		result = (result << std::numeric_limits<DigitType>::digits) | *i;
-// 	}
-// 	return result;
-// }
-
-// Unsigned::operator bool()
-// {
-// 	std::cerr << "Unsigned::operator bool()" << std::endl;
-// 	return !digits.empty();
-// }
 
 bool Unsigned::equal(const Unsigned& other) const noexcept
 {
@@ -715,21 +691,51 @@ std::string Unsigned::toOctalString() const
 	return std::string(buffer.rbegin(), buffer.rend());
 }
 
+Unsigned::operator bool() const noexcept
+{
+	return !digits.empty();
+}
+
 bool Unsigned::subtractAndTestNegative(const Unsigned& other)
 {
 	return subtractDigitsAndTestNegative(digits, other.digits, digits);
 }
-
-// bool Unsigned::subtractAndTestNegative(DigitType other)
-// {
-// 	return subtractDigitsAndTestNegative(digits, other, digits);
-// }
 
 void Unsigned::normalize()
 {
 	while (!digits.empty() && !digits.back()) {
 		digits.pop_back();
 	}
+}
+
+bool operator==(const Unsigned& lhs, const Unsigned& rhs) noexcept
+{
+	return lhs.equal(rhs);
+}
+
+bool operator!=(const Unsigned& lhs, const Unsigned& rhs) noexcept
+{
+	return !lhs.equal(rhs);
+}
+
+bool operator<(const Unsigned& lhs, const Unsigned& rhs) noexcept
+{
+	return lhs.lessThan(rhs);
+}
+
+bool operator<=(const Unsigned& lhs, const Unsigned& rhs) noexcept
+{
+	return lhs.lessThanOrEqual(rhs);
+}
+
+bool operator>(const Unsigned& lhs, const Unsigned& rhs) noexcept
+{
+	return !lhs.lessThanOrEqual(rhs);
+}
+
+bool operator>=(const Unsigned& lhs, const Unsigned& rhs) noexcept
+{
+	return !lhs.lessThan(rhs);
 }
 
 } // namespace MultiPrecision

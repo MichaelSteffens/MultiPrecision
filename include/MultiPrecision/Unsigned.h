@@ -28,12 +28,9 @@ public:
 	virtual ~Unsigned();
 	Unsigned& operator=(const Unsigned& other);
 	Unsigned& operator=(Unsigned&& other);
-	// Unsigned(unsigned long long i);
 	Unsigned(const char* number);
 	Unsigned(const std::string& number);
 	Unsigned(std::string::const_iterator first, std::string::const_iterator last);
-	// operator unsigned long long() const;
-	// operator bool();
 	bool equal(const Unsigned& other) const noexcept;
 	bool lessThan(const Unsigned& other) const noexcept;
 	bool lessThanOrEqual(const Unsigned& other) const noexcept;
@@ -57,11 +54,7 @@ public:
 	std::string toDecimalString() const;
 	std::string toHexadecimalString() const;
 	std::string toOctalString() const;
-
-	bool operator==(const Unsigned& other) const noexcept
-	{
-		return equal(other);
-	}
+	operator bool() const noexcept;
 
 private:
 	class DivisionByUnsigned;
@@ -78,6 +71,13 @@ struct Unsigned::DivisionResult
 	Unsigned quotient;
 	Unsigned remainder;
 };
+
+bool operator==(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+bool operator!=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+bool operator<(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+bool operator<=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+bool operator>(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+bool operator>=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 
 } // namespace MultiPrecision
 

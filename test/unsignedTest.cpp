@@ -11,7 +11,7 @@ TEST_CASE("Unsigned shift left", "[unsigned]")
 	SECTION("Shift by 1")
 	{
 		REQUIRE(testee.shiftedLeftBy(1) == "0x1fddb757c");
-		REQUIRE(testee == "0xfeedbabe");
+		REQUIRE("0xfeedbabe" == testee);
 	}
 	SECTION("Shift by 6")
 	{
@@ -204,3 +204,46 @@ TEST_CASE("Convert to octal string", "[unsigned]")
 		REQUIRE(testee.toOctalString() == "1234567012345670");
 	}
 }
+
+TEST_CASE("Operator ==", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabe");
+	SECTION("Equal LHS")
+	{
+		REQUIRE(testee == "0xfeedbabe");
+	}
+	SECTION("Not equal LHS")
+	{
+		REQUIRE_FALSE(testee == "0xbabefeed");
+	}
+	SECTION("Equal RHS")
+	{
+		REQUIRE("0xfeedbabe" == testee);
+	}
+	SECTION("Not equal RHS")
+	{
+		REQUIRE_FALSE("0xbabefeed" == testee);
+	}
+ }
+
+TEST_CASE("Operator !=", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabe");
+	SECTION("Equal LHS")
+	{
+		REQUIRE_FALSE(testee != "0xfeedbabe");
+	}
+	SECTION("Not equal LHS")
+	{
+		REQUIRE(testee != "0xbabefeed");
+	}
+	SECTION("Equal RHS")
+	{
+		REQUIRE_FALSE("0xfeedbabe" != testee);
+	}
+	SECTION("Not equal RHS")
+	{
+		REQUIRE("0xbabefeed" != testee);
+	}
+ }
+
