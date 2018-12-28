@@ -224,7 +224,7 @@ TEST_CASE("Operator ==", "[unsigned]")
 	{
 		REQUIRE_FALSE("0xbabefeed" == testee);
 	}
- }
+}
 
 TEST_CASE("Operator !=", "[unsigned]")
 {
@@ -245,5 +245,4 @@ TEST_CASE("Operator !=", "[unsigned]")
 	{
 		REQUIRE("0xbabefeed" != testee);
 	}
- }
-
+}
