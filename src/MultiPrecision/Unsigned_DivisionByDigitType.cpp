@@ -22,12 +22,32 @@ public:
 	{
 	}
 
-	Unsigned::DivisionResult quotientAndRemainder()
+	Unsigned::DivisionResult getQuotientAndRemainder()
 	{
 		if (remainder.digits.size() > 1 || (remainder.digits.size() == 1 && remainder.digits.front() >= divisor)) {
 			loopOverQuotientDigits();
 		}
-		return normalizedResult();
+		quotient.normalize();
+		remainder.normalize();
+		return Unsigned::DivisionResult({std::move(quotient), std::move(remainder)});
+	}
+
+	Unsigned getQuotient()
+	{
+		if (remainder.digits.size() > 1 || (remainder.digits.size() == 1 && remainder.digits.front() >= divisor)) {
+			loopOverQuotientDigits();
+		}
+		quotient.normalize();
+		return std::move(quotient);
+	}
+
+	Unsigned getRemainder()
+	{
+		if (remainder.digits.size() > 1 || (remainder.digits.size() == 1 && remainder.digits.front() >= divisor)) {
+			loopOverQuotientDigits();
+		}
+		remainder.normalize();
+		return std::move(remainder);
 	}
 
 private:
@@ -54,16 +74,9 @@ private:
 	void multiplyAndSubtract(std::size_t i)
 	{
 		remainderFragment.digits.assign(remainder.digits.begin() + i, remainder.digits.end());
-		remainderFragment.subtract(divisor * quotient.digits[i]);
+		remainderFragment.subtract(Unsigned(divisor * quotient.digits[i]));
 		remainder.digits.resize(i);
 		remainder.digits.insert(remainder.digits.end(), remainderFragment.digits.begin(), remainderFragment.digits.end());
-	}
-
-	Unsigned::DivisionResult normalizedResult()
-	{
-		quotient.normalize();
-		remainder.normalize();
-		return Unsigned::DivisionResult({std::move(quotient), std::move(remainder)});
 	}
 
 	Unsigned remainder;
@@ -72,12 +85,32 @@ private:
 	Unsigned remainderFragment;
 };
 
-Unsigned::DivisionResult Unsigned::dividedBy(DigitType other) const
+Unsigned::DivisionResult Unsigned::dividedBy(DigitType divisor) const
 {
-	if (other) {
-		return DivisionByDigitType(*this, other).quotientAndRemainder();
+	if (divisor) {
+		return DivisionByDigitType(*this, divisor).getQuotientAndRemainder();
 	} else {
 		throw DivisionByZero("Unsigned::dividedBy(DigitType): divisor is zero!");
+	}
+}
+
+Unsigned& Unsigned::operator/=(DigitType divisor)
+{
+	if (divisor) {
+		*this = DivisionByDigitType(*this, divisor).getQuotient();
+		return *this;
+	} else {
+		throw DivisionByZero("Unsigned::operator/=(DigitType): divisor is zero!");
+	}
+}
+
+Unsigned& Unsigned::operator%=(DigitType divisor)
+{
+	if (divisor) {
+		*this = DivisionByDigitType(*this, divisor).getRemainder();
+		return *this;
+	} else {
+		throw DivisionByZero("Unsigned::operator%=(DigitType): divisor is zero!");
 	}
 }
 

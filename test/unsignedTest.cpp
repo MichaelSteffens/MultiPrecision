@@ -7,7 +7,6 @@
 TEST_CASE("Unsigned shift left", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe");
-
 	SECTION("Shift by 1")
 	{
 		REQUIRE(testee.shiftedLeftBy(1) == "0x1fddb757c");
@@ -33,7 +32,6 @@ TEST_CASE("Unsigned shift left", "[unsigned]")
 TEST_CASE("Unsigned shift left in place", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe");
-
 	SECTION("Shift by 1")
 	{
 		testee.shiftLeftBy(1);
@@ -59,7 +57,6 @@ TEST_CASE("Unsigned shift left in place", "[unsigned]")
 TEST_CASE("Unsigned shift right", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe0000");
-
 	SECTION("Shift by 2")
 	{
 		REQUIRE(testee.shiftedRightBy(2) == "0x3fbb6eaf8000");
@@ -85,7 +82,6 @@ TEST_CASE("Unsigned shift right", "[unsigned]")
 TEST_CASE("Unsigned shift right in place", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe0000");
-
 	SECTION("Shift by 2")
 	{
 		testee.shiftRightBy(2);
@@ -108,11 +104,50 @@ TEST_CASE("Unsigned shift right in place", "[unsigned]")
 	}
 }
 
+TEST_CASE("Unsigned division", "[unsigned]")
+{
+	MultiPrecision::Unsigned dividend(
+		"0xfeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabe");
+	SECTION("Unsigned divisor")
+	{
+		auto result = dividend.dividedBy("0xfeedbabefeedbabefeedbabefeedbabefeed");
+		REQUIRE(result.quotient == "0x1000000000000000000000000000000000000bb87e9207fa87f2165735c6d");
+		REQUIRE(result.remainder == "0x2c51351a2c51bde6d550d6e7127cd28703d5");
+	}
+	SECTION("DigitType divisor")
+	{
+		auto result = dividend.dividedBy(MultiPrecision::Unsigned("0xfe"));
+		std::cerr << result.quotient.toHexadecimalString() << std::endl;
+		std::cerr << result.remainder.toHexadecimalString() << std::endl;
+		REQUIRE(
+			result.quotient == "0x100ef99f2e4b7291121301af4e8bf393161b11cf8f0cf5971e2b3210100ef99f2e4b7291121301af4e8bf393161b11c");
+		REQUIRE(result.remainder == "0xf6");
+	}
+}
+
+TEST_CASE("Unsigned division by divisor larger than dividend", "[unsigned]")
+{
+	MultiPrecision::Unsigned dividend("0x2");
+	SECTION("Unsigned divisor")
+	{
+		auto result = dividend.dividedBy(MultiPrecision::Unsigned("0x10000000000000001"));
+		REQUIRE(result.quotient == "0x0");
+		REQUIRE(result.remainder == "0x2");
+	}
+	SECTION("DigitType divisor")
+	{
+		auto result = dividend.dividedBy(MultiPrecision::Unsigned("0x11"));
+		REQUIRE(result.quotient == "0x0");
+		REQUIRE(result.remainder == "0x2");
+	}
+}
+
 TEST_CASE("Unsigned division need borrow", "[unsigned]")
 {
-	auto result = MultiPrecision::Unsigned("0x200000000").dividedBy(MultiPrecision::Unsigned("0x100000001"));
+	auto result = MultiPrecision::Unsigned("0x200000000000000000000000000000000")
+					  .dividedBy(MultiPrecision::Unsigned("0x100000000000000000000000000000001"));
 	REQUIRE(result.quotient == "0x1");
-	REQUIRE(result.remainder == "0xffffffff");
+	REQUIRE(result.remainder == "0xffffffffffffffffffffffffffffffff");
 }
 
 TEST_CASE("Convert decimal string", "[unsigned]")

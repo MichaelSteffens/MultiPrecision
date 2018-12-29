@@ -6,9 +6,9 @@
 
 
 #include "MultiPrecision/Unsigned.h"
+#include "MultiPrecision/DigitPairType.h"
 #include "MultiPrecision/DivisionByZero.h"
 #include "MultiPrecision/UnsignedUnderflow.h"
-#include "MultiPrecision/DigitPairType.h"
 #include <iostream>
 #include <limits>
 
@@ -25,14 +25,37 @@ public:
 	{
 	}
 
-	Unsigned::DivisionResult quotientAndRemainder()
+	Unsigned::DivisionResult getQuotientAndRemainder()
 	{
 		if (remainder >= divisor) {
 			expandFraction();
 			loopOverQuotientDigits();
 			reduceRemainder();
 		}
-		return normalizedResult();
+		quotient.normalize();
+		remainder.normalize();
+		return Unsigned::DivisionResult({std::move(quotient), std::move(remainder)});
+	}
+
+	Unsigned getQuotient()
+	{
+		if (remainder >= divisor) {
+			expandFraction();
+			loopOverQuotientDigits();
+		}
+		quotient.normalize();
+		return std::move(quotient);
+	}
+
+	Unsigned getRemainder()
+	{
+		if (remainder >= divisor) {
+			expandFraction();
+			loopOverQuotientDigits();
+			reduceRemainder();
+		}
+		remainder.normalize();
+		return std::move(remainder);
 	}
 
 private:
@@ -108,13 +131,6 @@ private:
 		remainder.shiftRightBy(expansionShift);
 	}
 
-	Unsigned::DivisionResult normalizedResult()
-	{
-		quotient.normalize();
-		remainder.normalize();
-		return Unsigned::DivisionResult({std::move(quotient), std::move(remainder)});
-	}
-
 	Unsigned remainder;
 	Unsigned divisor;
 	Unsigned quotient;
@@ -128,14 +144,46 @@ private:
 Unsigned::DivisionResult Unsigned::dividedBy(const Unsigned& other) const
 {
 	Unsigned::DivisionResult result;
-	if (other.digits.empty()) {
-		throw DivisionByZero("Unsigned::dividedBy(const Unsigned&): divisor is zero!");
-	} else if (other.digits.size() == 1) {
-		result = dividedBy(other.digits[0]);
+	if (other) {
+		if (other.digits.size() == 1) {
+			result = dividedBy(other.digits.front());
+		} else {
+			result = DivisionByUnsigned(*this, other).getQuotientAndRemainder();
+		}
 	} else {
-		result = DivisionByUnsigned(*this, other).quotientAndRemainder();
+		throw DivisionByZero("Unsigned::dividedBy(const Unsigned&): divisor is zero!");
 	}
 	return result;
+}
+
+Unsigned& Unsigned::operator/=(const Unsigned& other)
+{
+	Unsigned::DivisionResult result;
+	if (other) {
+		if (other.digits.size() == 1) {
+			*this /= other.digits.front();
+		} else {
+			*this = DivisionByUnsigned(*this, other).getQuotient();
+		}
+	} else {
+		throw DivisionByZero("Unsigned::operator/=(const Unsigned&): divisor is zero!");
+	}
+	return *this;
+}
+
+Unsigned& Unsigned::operator%=(const Unsigned& other)
+{
+	Unsigned::DivisionResult result;
+	if (other) {
+		if (other.digits.size() == 1) {
+			*this %= other.digits.front();
+		} else {
+			*this = DivisionByUnsigned(*this, other).getRemainder();
+		}
+	} else {
+		throw DivisionByZero("Unsigned::operator%=(const Unsigned&): divisor is zero!");
+	}
+	return *this;
 }
 
 } // namespace MultiPrecision

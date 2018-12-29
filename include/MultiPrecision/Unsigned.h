@@ -28,6 +28,7 @@ public:
 	virtual ~Unsigned();
 	Unsigned& operator=(const Unsigned& other);
 	Unsigned& operator=(Unsigned&& other);
+	explicit Unsigned(unsigned long long n);
 	Unsigned(const char* number);
 	Unsigned(const std::string& number);
 	Unsigned(std::string::const_iterator first, std::string::const_iterator last);
@@ -36,14 +37,12 @@ public:
 	bool lessThanOrEqual(const Unsigned& other) const noexcept;
 	Unsigned plus(const Unsigned& other) const;
 	Unsigned& add(const Unsigned& other);
-	Unsigned& add(DigitType other);
 	Unsigned minus(const Unsigned& other) const;
 	Unsigned& subtract(const Unsigned& other);
-	Unsigned& subtract(DigitType other);
 	Unsigned times(const Unsigned& other) const;
-	Unsigned times(DigitType factor) const;
 	DivisionResult dividedBy(const Unsigned& other) const;
-	DivisionResult dividedBy(DigitType other) const;
+	Unsigned& operator/=(const Unsigned& other);
+	Unsigned& operator%=(const Unsigned& other);
 	Unsigned shiftedLeftBy(std::size_t bits) const;
 	Unsigned& shiftLeftBy(std::size_t bits);
 	Unsigned shiftedRightBy(std::size_t bits) const;
@@ -59,6 +58,13 @@ public:
 private:
 	class DivisionByUnsigned;
 	class DivisionByDigitType;
+
+	Unsigned& add(DigitType other);
+	Unsigned& subtract(DigitType other);
+	Unsigned times(DigitType factor) const;
+	DivisionResult dividedBy(DigitType divisor) const;
+	Unsigned& operator/=(DigitType divisor);
+	Unsigned& operator%=(DigitType divisor);
 
 	bool subtractAndTestNegative(const Unsigned& other);
 	void normalize();
@@ -78,6 +84,8 @@ bool operator<(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 bool operator<=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 bool operator>(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 bool operator>=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+Unsigned operator/(const Unsigned& lhs, const Unsigned& rhs);
+Unsigned operator%(const Unsigned& lhs, const Unsigned& rhs);
 
 } // namespace MultiPrecision
 

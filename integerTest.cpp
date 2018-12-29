@@ -14,10 +14,10 @@ int main(int argc, char* argv[])
 	unsigned long y;
 	for (x = 0; x <= 0x1ffffffffffff; ++x) {
 		for (y = 1; y <= 0x1ffffffff; ++y) {
-			MultiPrecision::Unsigned u = x;
-			MultiPrecision::Unsigned v = y;
+			MultiPrecision::Unsigned u(x);
+			MultiPrecision::Unsigned v(y);
 			auto result = u.dividedBy(v);
-			if (result.quotient != x / y) {
+			if (result.quotient != MultiPrecision::Unsigned(x / y) || result.remainder != MultiPrecision::Unsigned(x % y)) {
 				std::cout << "Failed: " << x << " / " << y << " == " << x / y << " != " << result.quotient << "  || " << x << " % "
 						  << y << " == " << x % y << " != " << result.remainder << std::endl;
 			}
