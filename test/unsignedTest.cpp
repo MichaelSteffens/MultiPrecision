@@ -116,9 +116,7 @@ TEST_CASE("Unsigned division", "[unsigned]")
 	}
 	SECTION("DigitType divisor")
 	{
-		auto result = dividend.dividedBy(MultiPrecision::Unsigned("0xfe"));
-		std::cerr << result.quotient.toHexadecimalString() << std::endl;
-		std::cerr << result.remainder.toHexadecimalString() << std::endl;
+		auto result = dividend.dividedBy("0xfe");
 		REQUIRE(
 			result.quotient == "0x100ef99f2e4b7291121301af4e8bf393161b11cf8f0cf5971e2b3210100ef99f2e4b7291121301af4e8bf393161b11c");
 		REQUIRE(result.remainder == "0xf6");
@@ -150,6 +148,38 @@ TEST_CASE("Unsigned division need borrow", "[unsigned]")
 	REQUIRE(result.remainder == "0xffffffffffffffffffffffffffffffff");
 }
 
+TEST_CASE("Unsigned division in place operator", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee(
+		"0xfeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabe");
+	SECTION("Unsigned divisor")
+	{
+		testee /= "0xfeedbabefeedbabefeedbabefeedbabefeed";
+		REQUIRE(testee == "0x1000000000000000000000000000000000000bb87e9207fa87f2165735c6d");
+	}
+	SECTION("DigitType divisor")
+	{
+		testee /= "0xfe";
+		REQUIRE(testee == "0x100ef99f2e4b7291121301af4e8bf393161b11cf8f0cf5971e2b3210100ef99f2e4b7291121301af4e8bf393161b11c");
+	}
+}
+
+TEST_CASE("Unsigned modulo in place operator", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee(
+		"0xfeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabe");
+	SECTION("Unsigned divisor")
+	{
+		testee %= "0xfeedbabefeedbabefeedbabefeedbabefeed";
+		REQUIRE(testee == "0x2c51351a2c51bde6d550d6e7127cd28703d5");
+	}
+	SECTION("DigitType divisor")
+	{
+		testee %= "0xfe";
+		REQUIRE(testee == "0xf6");
+	}
+}
+
 TEST_CASE("Convert decimal string", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee;
@@ -160,8 +190,8 @@ TEST_CASE("Convert decimal string", "[unsigned]")
 	}
 	SECTION("Large number")
 	{
-		std::string number("12345678901234567890");
-		REQUIRE(MultiPrecision::Unsigned::fromDecimal(number.begin(), number.end()) == "12345678901234567890");
+		std::string number("1234567890123456789012345678901234567890");
+		REQUIRE(MultiPrecision::Unsigned::fromDecimal(number.begin(), number.end()) == "1234567890123456789012345678901234567890");
 	}
 }
 
@@ -175,8 +205,8 @@ TEST_CASE("Convert hexadecimal string", "[unsigned]")
 	}
 	SECTION("Large number")
 	{
-		std::string number("feedbabefeedbabe");
-		REQUIRE(MultiPrecision::Unsigned::fromHexadecimal(number.begin(), number.end()) == "0xfeedbabefeedbabe");
+		std::string number("feedbabefeedbabefeedbabefeedbabe");
+		REQUIRE(MultiPrecision::Unsigned::fromHexadecimal(number.begin(), number.end()) == "0xfeedbabefeedbabefeedbabefeedbabe");
 	}
 }
 
@@ -190,8 +220,8 @@ TEST_CASE("Convert octal string", "[unsigned]")
 	}
 	SECTION("Large number")
 	{
-		std::string number("1234567012345670");
-		REQUIRE(MultiPrecision::Unsigned::fromOctal(number.begin(), number.end()) == "01234567012345670");
+		std::string number("12345670123456701234567012345670");
+		REQUIRE(MultiPrecision::Unsigned::fromOctal(number.begin(), number.end()) == "012345670123456701234567012345670");
 	}
 }
 
@@ -205,8 +235,8 @@ TEST_CASE("Convert to decimal string", "[unsigned]")
 	}
 	SECTION("Large number")
 	{
-		testee = "12345678901234567890";
-		REQUIRE(testee.toDecimalString() == "12345678901234567890");
+		testee = "1234567890123456789012345678901234567890";
+		REQUIRE(testee.toDecimalString() == "1234567890123456789012345678901234567890");
 	}
 }
 
@@ -220,8 +250,8 @@ TEST_CASE("Convert to hexadecimal string", "[unsigned]")
 	}
 	SECTION("Large number")
 	{
-		testee = "0xfeedbabefeedbabe";
-		REQUIRE(testee.toHexadecimalString() == "feedbabefeedbabe");
+		testee = "0xfeedbabefeedbabefeedbabefeedbabe";
+		REQUIRE(testee.toHexadecimalString() == "feedbabefeedbabefeedbabefeedbabe");
 	}
 }
 
@@ -235,8 +265,8 @@ TEST_CASE("Convert to octal string", "[unsigned]")
 	}
 	SECTION("Large number")
 	{
-		testee = "01234567012345670";
-		REQUIRE(testee.toOctalString() == "1234567012345670");
+		testee = "012345670123456701234567012345670";
+		REQUIRE(testee.toOctalString() == "12345670123456701234567012345670");
 	}
 }
 
