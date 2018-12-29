@@ -74,7 +74,7 @@ private:
 	void multiplyAndSubtract(std::size_t i)
 	{
 		remainderFragment.digits.assign(remainder.digits.begin() + i, remainder.digits.end());
-		remainderFragment.subtract(Unsigned(divisor * quotient.digits[i]));
+		remainderFragment.subtract(Unsigned(static_cast<DigitPairType>(divisor) * quotient.digits[i]));
 		remainder.digits.resize(i);
 		remainder.digits.insert(remainder.digits.end(), remainderFragment.digits.begin(), remainderFragment.digits.end());
 	}
