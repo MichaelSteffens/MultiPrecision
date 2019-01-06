@@ -341,17 +341,20 @@ Unsigned Unsigned::times(DigitType other) const
 
 namespace {
 
+Unsigned::DigitType leftBitsOf(Unsigned::DigitType digit, std::size_t shiftBits)
+{
+	return shiftBits ? digit >> (std::numeric_limits<Unsigned::DigitType>::digits - shiftBits) : 0;
+}
+
 void shiftDigitsLeft(const std::vector<Unsigned::DigitType>& digits, std::size_t bits, std::vector<Unsigned::DigitType>& result)
 {
 	if (!digits.empty()) {
 		std::size_t shiftDigits = bits / std::numeric_limits<Unsigned::DigitType>::digits;
 		std::size_t shiftBits = bits % std::numeric_limits<Unsigned::DigitType>::digits;
 		result.resize(digits.size() + shiftDigits + 1);
-		result[result.size() - 1] =
-			digits[result.size() - shiftDigits - 2] >> (std::numeric_limits<Unsigned::DigitType>::digits - shiftBits);
+		result[result.size() - 1] = leftBitsOf(digits[result.size() - shiftDigits - 2], shiftBits);
 		for (std::size_t i = result.size() - 2; i > shiftDigits; --i) {
-			result[i] = (digits[i - shiftDigits] << shiftBits) |
-						(digits[i - shiftDigits - 1] >> (std::numeric_limits<Unsigned::DigitType>::digits - shiftBits));
+			result[i] = (digits[i - shiftDigits] << shiftBits) | leftBitsOf(digits[i - shiftDigits - 1], shiftBits);
 		}
 		result[shiftDigits] = digits[0] << shiftBits;
 		for (std::size_t i = 0; i < shiftDigits; ++i) {
@@ -381,6 +384,11 @@ Unsigned Unsigned::shiftedLeftBy(std::size_t bits) const
 
 namespace {
 
+Unsigned::DigitType rightBitsOf(Unsigned::DigitType digit, std::size_t shiftBits)
+{
+	return shiftBits ? digit << (std::numeric_limits<Unsigned::DigitType>::digits - shiftBits) : 0;
+}
+
 template<bool resultIsDigits>
 void shiftDigitsRight(const std::vector<Unsigned::DigitType>& digits, std::size_t bits, std::vector<Unsigned::DigitType>& result)
 {
@@ -391,8 +399,7 @@ void shiftDigitsRight(const std::vector<Unsigned::DigitType>& digits, std::size_
 			result.resize(digits.size() - shiftDigits);
 		}
 		for (std::size_t i = 0; i < digits.size() - shiftDigits - 1; ++i) {
-			result[i] = (digits[i + shiftDigits] >> shiftBits) |
-						(digits[i + shiftDigits + 1] << (std::numeric_limits<Unsigned::DigitType>::digits - shiftBits));
+			result[i] = (digits[i + shiftDigits] >> shiftBits) | rightBitsOf(digits[i + shiftDigits + 1], shiftBits);
 		}
 		result[digits.size() - shiftDigits - 1] = digits[digits.size() - 1] >> shiftBits;
 		if (resultIsDigits) {

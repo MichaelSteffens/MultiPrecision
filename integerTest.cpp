@@ -12,8 +12,8 @@ int main(int argc, char* argv[])
 {
 	unsigned long x;
 	unsigned long y;
-	for (x = 0; x <= 0x1ffffffffffff; ++x) {
-		for (y = 1; y <= 0x1ffffffff; ++y) {
+	for (x = 0x10000; x <= 0xffffffffff; ++x) {
+		for (y = 0x80ff; y <= 0x80ff; ++y) {
 			MultiPrecision::Unsigned u(x);
 			MultiPrecision::Unsigned v(y);
 			auto result = u.dividedBy(v);

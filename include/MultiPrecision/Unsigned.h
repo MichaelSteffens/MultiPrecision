@@ -16,7 +16,7 @@ namespace MultiPrecision {
 class Unsigned
 {
 public:
-	using DigitType = unsigned short;
+	using DigitType = unsigned int;
 	static_assert(std::is_integral<DigitType>::value);
 	static_assert(std::is_unsigned<DigitType>::value);
 

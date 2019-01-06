@@ -14,11 +14,11 @@
 
 namespace MultiPrecision {
 
-using DigitPairType = unsigned int;
+using DigitPairType = unsigned long;
 
 static_assert(std::is_integral<DigitPairType>::value);
 static_assert(std::is_unsigned<DigitPairType>::value);
-static_assert(std::numeric_limits<DigitPairType>::max() >= 2 * std::numeric_limits<Unsigned::DigitType>::max());
+static_assert(std::numeric_limits<DigitPairType>::digits >= 2 * std::numeric_limits<Unsigned::DigitType>::digits);
 
 } // namespace MultiPrecision
 

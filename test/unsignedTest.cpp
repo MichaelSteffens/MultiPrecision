@@ -140,6 +140,67 @@ TEST_CASE("Unsigned division by divisor larger than dividend", "[unsigned]")
 	}
 }
 
+TEST_CASE("Unsigned division need reduction by one", "[unsigned]")
+{
+	SECTION("DigitType 8 bits")
+	{
+		auto result = MultiPrecision::Unsigned("0x10000").dividedBy(MultiPrecision::Unsigned("0x80ff"));
+		REQUIRE(result.quotient == "0x1");
+		REQUIRE(result.remainder == "0x7f01");
+	}
+	SECTION("DigitType 16 bits")
+	{
+		auto result = MultiPrecision::Unsigned("0x100000000").dividedBy(MultiPrecision::Unsigned("0x8000ffff"));
+		REQUIRE(result.quotient == "0x1");
+		REQUIRE(result.remainder == "0x7fff0001");
+	}
+	SECTION("DigitType 32 bits")
+	{
+		auto result = MultiPrecision::Unsigned("0x10000000000000000").dividedBy(MultiPrecision::Unsigned("0x80000000ffffffff"));
+		REQUIRE(result.quotient == "0x1");
+		REQUIRE(result.remainder == "0x7fffffff00000001");
+	}
+	SECTION("DigitType 64 bits")
+	{
+		auto result = MultiPrecision::Unsigned("0x100000000000000000000000000000000")
+						  .dividedBy(MultiPrecision::Unsigned("0x8000000000000000ffffffffffffffff"));
+		REQUIRE(result.quotient == "0x1");
+		REQUIRE(result.remainder == "0x7fffffffffffffff0000000000000001");
+	}
+}
+
+TEST_CASE("Unsigned division need reduction by two", "[unsigned]")
+{
+	SECTION("DigitType 8 bits")
+	{
+		auto result = MultiPrecision::Unsigned("0xff0000").dividedBy(MultiPrecision::Unsigned("0x80ff"));
+		REQUIRE(result.quotient == "0x1fa");
+		REQUIRE(result.remainder == "0x7fa");
+	}
+	SECTION("DigitType 16 bits")
+	{
+		auto result = MultiPrecision::Unsigned("0xffff00000000").dividedBy(MultiPrecision::Unsigned("0x8000ffff"));
+		REQUIRE(result.quotient == "0x1fffa");
+		REQUIRE(result.remainder == "0x7fffa");
+	}
+	SECTION("DigitType 32 bits")
+	{
+		auto result =
+			MultiPrecision::Unsigned("0xffffffff0000000000000000").dividedBy(MultiPrecision::Unsigned("0x80000000ffffffff"));
+		std::cerr << "result.quotient=" << result.quotient.toHexadecimalString() << std::endl;
+		std::cerr << "result.remainder=" << result.remainder.toHexadecimalString() << std::endl;
+		REQUIRE(result.quotient == "0x1fffffffa");
+		REQUIRE(result.remainder == "0x7fffffffa");
+	}
+	SECTION("DigitType 64 bits")
+	{
+		auto result = MultiPrecision::Unsigned("0xffffffffffffffff00000000000000000000000000000000")
+						  .dividedBy(MultiPrecision::Unsigned("0x8000000000000000ffffffffffffffff"));
+		REQUIRE(result.quotient == "0x1fffffffffffffffa");
+		REQUIRE(result.remainder == "0x7fffffffffffffffa");
+	}
+}
+
 TEST_CASE("Unsigned division need borrow", "[unsigned]")
 {
 	auto result = MultiPrecision::Unsigned("0x200000000000000000000000000000000")

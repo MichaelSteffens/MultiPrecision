@@ -91,14 +91,14 @@ private:
 			remainder.digits[i + divisorLength - 1];
 		trialQuotient = trialDividend / divisor.digits[divisorLength - 1];
 		trialRemainder = trialDividend % divisor.digits[divisorLength - 1];
-		testQuotientDigitTooLarge(i);
+		adjustIfQuotientDigitTooLarge(i);
 		if (trialRemainder < RADIX) {
-			testQuotientDigitTooLarge(i);
+			adjustIfQuotientDigitTooLarge(i);
 		}
 		quotient.digits[i] = trialQuotient;
 	}
 
-	void testQuotientDigitTooLarge(std::size_t i)
+	void adjustIfQuotientDigitTooLarge(std::size_t i)
 	{
 		if (trialQuotient == RADIX ||
 			(trialQuotient * divisor.digits[divisorLength - 2]) >
