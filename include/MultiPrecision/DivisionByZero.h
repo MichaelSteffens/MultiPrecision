@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2018 Dr. Michael Steffens
+// Copyright (c) 2019 Dr. Michael Steffens
 //
 // SPDX-License-Identifier:	 LGPL-2.1-or-later
 //
