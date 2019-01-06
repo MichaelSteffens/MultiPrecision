@@ -8,6 +8,7 @@
 #include "MultiPrecision/Unsigned.h"
 #include "MultiPrecision/DigitPairType.h"
 #include "MultiPrecision/DivisionByZero.h"
+#include "MultiPrecision/InvalidCharacter.h"
 #include "MultiPrecision/UnsignedUnderflow.h"
 #include <iostream>
 #include <limits>
@@ -426,7 +427,8 @@ Unsigned Unsigned::fromDecimal(std::string::const_iterator first, std::string::c
 		if (*i >= '0' && *i <= '9') {
 			result = result.times(10).add(*i - '0');
 		} else {
-			throw Error("Unsigned::fromDecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
+			throw InvalidCharacter(
+				"Unsigned::fromDecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
 		}
 	}
 	return result;
@@ -441,7 +443,8 @@ Unsigned Unsigned::fromHexadecimal(std::string::const_iterator first, std::strin
 		} else if (*i >= 'a' && *i <= 'f') {
 			result.shiftLeftBy(4).add(*i - 'a' + 10);
 		} else {
-			throw Error("Unsigned::fromHexadecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
+			throw InvalidCharacter(
+				"Unsigned::fromHexadecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
 		}
 	}
 	return result;
@@ -454,7 +457,8 @@ Unsigned Unsigned::fromOctal(std::string::const_iterator first, std::string::con
 		if (*i >= '0' && *i <= '7') {
 			result.shiftLeftBy(3).add(*i - '0');
 		} else {
-			throw Error("Unsigned::fromOctal(std::string::const_iterator, std::string::const_iterator): invalid character");
+			throw InvalidCharacter(
+				"Unsigned::fromOctal(std::string::const_iterator, std::string::const_iterator): invalid character");
 		}
 	}
 	return result;
