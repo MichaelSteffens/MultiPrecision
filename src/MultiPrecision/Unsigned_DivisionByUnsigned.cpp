@@ -59,10 +59,10 @@ public:
 	}
 
 private:
-	static constexpr DigitPairType radix = static_cast<DigitPairType>(1) << std::numeric_limits<DigitType>::digits;
+	static constexpr DigitPairType RADIX = static_cast<DigitPairType>(1) << std::numeric_limits<DigitType>::digits;
 
 	// Expand remainder (initialized by dividend) and divisor by a common factor power of 2, ensuring that the divisor most
-	// significant word is >= radix / 2.
+	// significant digit is >= RADIX / 2.
 	void expandFraction()
 	{
 		expansionShift = 0;
@@ -92,7 +92,7 @@ private:
 		trialQuotient = trialDividend / divisor.digits[divisorLength - 1];
 		trialRemainder = trialDividend % divisor.digits[divisorLength - 1];
 		testQuotientDigitTooLarge(i);
-		if (trialRemainder < radix) {
+		if (trialRemainder < RADIX) {
 			testQuotientDigitTooLarge(i);
 		}
 		quotient.digits[i] = trialQuotient;
@@ -100,7 +100,7 @@ private:
 
 	void testQuotientDigitTooLarge(std::size_t i)
 	{
-		if (trialQuotient == radix ||
+		if (trialQuotient == RADIX ||
 			(trialQuotient * divisor.digits[divisorLength - 2]) >
 				((trialRemainder << std::numeric_limits<DigitType>::digits) + remainder.digits[i + divisorLength - 2])) {
 			--trialQuotient;

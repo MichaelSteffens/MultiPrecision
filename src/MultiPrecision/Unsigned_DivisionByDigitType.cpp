@@ -51,8 +51,6 @@ public:
 	}
 
 private:
-	static constexpr DigitPairType radix = static_cast<DigitPairType>(1) << std::numeric_limits<DigitType>::digits;
-
 	void loopOverQuotientDigits()
 	{
 		std::size_t quotientLength = remainder.digits.size();
