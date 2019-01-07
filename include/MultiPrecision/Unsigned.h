@@ -22,11 +22,6 @@ public:
 
 	struct DivisionResult;
 
-	class DivisionByUnsigned;
-	class DivisionByDigitType;
-	class ShiftToLeft;
-	class ShiftToRight;
-
 	Unsigned();
 	Unsigned(const Unsigned& other);
 	Unsigned(Unsigned&& other);
@@ -59,6 +54,11 @@ public:
 	bool isZero() const noexcept;
 
 private:
+	class DivisionByUnsigned;
+	class DivisionByDigitType;
+	class ShiftToLeft;
+	class ShiftToRight;
+
 	Unsigned& add(DigitType other);
 	Unsigned& subtract(DigitType other);
 	Unsigned times(DigitType factor) const;
@@ -69,6 +69,17 @@ private:
 	bool subtractAndTestNegative(const Unsigned& other);
 	void normalize();
 
+	friend bool operator==(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+	friend bool operator!=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+	friend bool operator<(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+	friend bool operator<=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+	friend bool operator>(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+	friend bool operator>=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+	friend Unsigned operator/(const Unsigned& lhs, const Unsigned& rhs);
+	friend Unsigned operator%(const Unsigned& lhs, const Unsigned& rhs);
+	friend Unsigned operator<<(const Unsigned& n, std::size_t bits);
+	friend Unsigned operator>>(const Unsigned& n, std::size_t bits);
+
 	std::vector<DigitType> digits;
 };
 
@@ -78,16 +89,6 @@ struct Unsigned::DivisionResult
 	Unsigned remainder;
 };
 
-bool operator==(const Unsigned& lhs, const Unsigned& rhs) noexcept;
-bool operator!=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
-bool operator<(const Unsigned& lhs, const Unsigned& rhs) noexcept;
-bool operator<=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
-bool operator>(const Unsigned& lhs, const Unsigned& rhs) noexcept;
-bool operator>=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
-Unsigned operator/(const Unsigned& lhs, const Unsigned& rhs);
-Unsigned operator%(const Unsigned& lhs, const Unsigned& rhs);
-Unsigned operator<<(const Unsigned& n, std::size_t bits);
-Unsigned operator>>(const Unsigned& n, std::size_t bits);
 
 } // namespace MultiPrecision
 

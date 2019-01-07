@@ -14,61 +14,62 @@ namespace MultiPrecision {
 class Unsigned::ShiftToRight
 {
 public:
-	ShiftToRight(const Unsigned& n, Unsigned& result, std::size_t bits) :
-		digits(n.digits),
+	ShiftToRight(const decltype(Unsigned::digits)& digits, decltype(Unsigned::digits)& result, std::size_t bits) :
+		digits(digits),
 		result(result),
-		shiftDigits(bits / std::numeric_limits<DigitType>::digits),
-		shiftBits(bits % std::numeric_limits<DigitType>::digits)
+		digitShift(bits / std::numeric_limits<DigitType>::digits),
+		bitShift(bits % std::numeric_limits<DigitType>::digits)
 	{
 	}
 
 	template<bool resultIsDigits>
 	void run()
 	{
-		if (shiftDigits < digits.size()) {
+		if (digitShift < digits.size()) {
 			if (!resultIsDigits) {
-				result.digits.resize(digits.size() - shiftDigits);
+				result.resize(digits.size() - digitShift);
 			}
-			for (std::size_t i = 0; i < digits.size() - shiftDigits - 1; ++i) {
-				result.digits[i] = leftBitsOf(digits[i + shiftDigits]) | rightBitsOf(digits[i + shiftDigits + 1]);
+			for (std::size_t i = 0; i < digits.size() - digitShift - 1; ++i) {
+				result[i] = leftBitsOf(digits[i + digitShift]) | rightBitsOf(digits[i + digitShift + 1]);
 			}
-			result.digits[digits.size() - shiftDigits - 1] = leftBitsOf(digits[digits.size() - 1]);
+			result[digits.size() - digitShift - 1] = leftBitsOf(digits[digits.size() - 1]);
 			if (resultIsDigits) {
-				result.digits.resize(digits.size() - shiftDigits);
+				result.resize(digits.size() - digitShift);
 			}
-			result.normalize();
 		} else {
-			result.digits.clear();
+			result.clear();
 		}
 	}
 
 private:
 	DigitType rightBitsOf(DigitType digit)
 	{
-		return shiftBits ? digit << (std::numeric_limits<DigitType>::digits - shiftBits) : 0;
+		return bitShift ? digit << (std::numeric_limits<DigitType>::digits - bitShift) : 0;
 	}
 
 	DigitType leftBitsOf(DigitType digit)
 	{
-		return digit >> shiftBits;
+		return digit >> bitShift;
 	}
 
 	const decltype(Unsigned::digits)& digits;
-	Unsigned& result;
-	const std::size_t shiftDigits;
-	const std::size_t shiftBits;
+	decltype(Unsigned::digits)& result;
+	const std::size_t digitShift;
+	const std::size_t bitShift;
 };
 
 Unsigned& Unsigned::operator>>=(std::size_t bits)
 {
-	ShiftToRight(*this, *this, bits).run<true>();
+	ShiftToRight(digits, digits, bits).run<true>();
+	normalize();
 	return *this;
 }
 
 Unsigned operator>>(const Unsigned& n, std::size_t bits)
 {
 	Unsigned result;
-	Unsigned::ShiftToRight(n, result, bits).run<false>();
+	Unsigned::ShiftToRight(n.digits, result.digits, bits).run<false>();
+	result.normalize();
 	return result;
 }
 
