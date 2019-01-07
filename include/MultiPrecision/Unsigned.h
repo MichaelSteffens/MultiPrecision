@@ -22,6 +22,11 @@ public:
 
 	struct DivisionResult;
 
+	class DivisionByUnsigned;
+	class DivisionByDigitType;
+	class ShiftToLeft;
+	class ShifToRight;
+
 	Unsigned();
 	Unsigned(const Unsigned& other);
 	Unsigned(Unsigned&& other);
@@ -43,22 +48,19 @@ public:
 	DivisionResult dividedBy(const Unsigned& other) const;
 	Unsigned& operator/=(const Unsigned& other);
 	Unsigned& operator%=(const Unsigned& other);
-	Unsigned shiftedLeftBy(std::size_t bits) const;
-	Unsigned& shiftLeftBy(std::size_t bits);
+	Unsigned& operator<<=(std::size_t bits);
 	Unsigned shiftedRightBy(std::size_t bits) const;
 	Unsigned& shiftRightBy(std::size_t bits);
+	Unsigned& operator>>=(std::size_t bits);
 	static Unsigned fromDecimal(std::string::const_iterator first, std::string::const_iterator last);
 	static Unsigned fromHexadecimal(std::string::const_iterator first, std::string::const_iterator last);
 	static Unsigned fromOctal(std::string::const_iterator first, std::string::const_iterator last);
 	std::string toDecimalString() const;
 	std::string toHexadecimalString() const;
 	std::string toOctalString() const;
-	operator bool() const noexcept;
+	bool isZero() const noexcept;
 
 private:
-	class DivisionByUnsigned;
-	class DivisionByDigitType;
-
 	Unsigned& add(DigitType other);
 	Unsigned& subtract(DigitType other);
 	Unsigned times(DigitType factor) const;
@@ -86,6 +88,8 @@ bool operator>(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 bool operator>=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 Unsigned operator/(const Unsigned& lhs, const Unsigned& rhs);
 Unsigned operator%(const Unsigned& lhs, const Unsigned& rhs);
+Unsigned operator<<(const Unsigned& n, std::size_t bits);
+Unsigned operator>>(const Unsigned& n, std::size_t bits);
 
 } // namespace MultiPrecision
 

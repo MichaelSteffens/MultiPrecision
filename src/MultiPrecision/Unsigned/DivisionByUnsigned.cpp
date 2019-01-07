@@ -69,8 +69,8 @@ private:
 		for (DigitType mask = 1 << (std::numeric_limits<DigitType>::digits - 1); !(divisor.digits.back() & mask); mask >>= 1) {
 			++expansionShift;
 		}
-		remainder.shiftLeftBy(expansionShift);
-		divisor.shiftLeftBy(expansionShift);
+		remainder <<= expansionShift;
+		divisor <<= expansionShift;
 	}
 
 	void loopOverQuotientDigits()
@@ -143,47 +143,45 @@ private:
 
 Unsigned::DivisionResult Unsigned::dividedBy(const Unsigned& other) const
 {
-	Unsigned::DivisionResult result;
-	if (other) {
+	if (other.digits.empty()) {
+		throw DivisionByZero("Unsigned::dividedBy(const Unsigned&): divisor is zero!");
+	} else {
+		Unsigned::DivisionResult result;
 		if (other.digits.size() == 1) {
 			result = dividedBy(other.digits.front());
 		} else {
 			result = DivisionByUnsigned(*this, other).getQuotientAndRemainder();
 		}
-	} else {
-		throw DivisionByZero("Unsigned::dividedBy(const Unsigned&): divisor is zero!");
+		return result;
 	}
-	return result;
 }
 
 Unsigned& Unsigned::operator/=(const Unsigned& other)
 {
-	Unsigned::DivisionResult result;
-	if (other) {
+	if (other.digits.empty()) {
+		throw DivisionByZero("Unsigned::operator/=(const Unsigned&): divisor is zero!");
+	} else {
 		if (other.digits.size() == 1) {
 			*this /= other.digits.front();
 		} else {
 			*this = DivisionByUnsigned(*this, other).getQuotient();
 		}
-	} else {
-		throw DivisionByZero("Unsigned::operator/=(const Unsigned&): divisor is zero!");
+		return *this;
 	}
-	return *this;
 }
 
 Unsigned& Unsigned::operator%=(const Unsigned& other)
 {
-	Unsigned::DivisionResult result;
-	if (other) {
+	if (other.digits.empty()) {
+		throw DivisionByZero("Unsigned::operator%=(const Unsigned&): divisor is zero!");
+	} else {
 		if (other.digits.size() == 1) {
 			*this %= other.digits.front();
 		} else {
 			*this = DivisionByUnsigned(*this, other).getRemainder();
 		}
-	} else {
-		throw DivisionByZero("Unsigned::operator%=(const Unsigned&): divisor is zero!");
+		return *this;
 	}
-	return *this;
 }
 
 } // namespace MultiPrecision

@@ -18,8 +18,8 @@ int main(int argc, char* argv[])
 			MultiPrecision::Unsigned v(y);
 			auto result = u.dividedBy(v);
 			if (result.quotient != MultiPrecision::Unsigned(x / y) || result.remainder != MultiPrecision::Unsigned(x % y)) {
-				std::cout << "Failed: " << x << " / " << y << " == " << x / y << " != " << result.quotient << "  || " << x << " % "
-						  << y << " == " << x % y << " != " << result.remainder << std::endl;
+				std::cout << "Failed: " << x << " / " << y << " == " << x / y << " != " << result.quotient.toDecimalString() << "  || " << x << " % "
+						  << y << " == " << x % y << " != " << result.remainder.toDecimalString() << std::endl;
 			}
 		}
 	}

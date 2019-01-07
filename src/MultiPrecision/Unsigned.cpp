@@ -341,49 +341,6 @@ Unsigned Unsigned::times(DigitType other) const
 
 namespace {
 
-Unsigned::DigitType leftBitsOf(Unsigned::DigitType digit, std::size_t shiftBits)
-{
-	return shiftBits ? digit >> (std::numeric_limits<Unsigned::DigitType>::digits - shiftBits) : 0;
-}
-
-void shiftDigitsLeft(const std::vector<Unsigned::DigitType>& digits, std::size_t bits, std::vector<Unsigned::DigitType>& result)
-{
-	if (!digits.empty()) {
-		std::size_t shiftDigits = bits / std::numeric_limits<Unsigned::DigitType>::digits;
-		std::size_t shiftBits = bits % std::numeric_limits<Unsigned::DigitType>::digits;
-		result.resize(digits.size() + shiftDigits + 1);
-		result[result.size() - 1] = leftBitsOf(digits[result.size() - shiftDigits - 2], shiftBits);
-		for (std::size_t i = result.size() - 2; i > shiftDigits; --i) {
-			result[i] = (digits[i - shiftDigits] << shiftBits) | leftBitsOf(digits[i - shiftDigits - 1], shiftBits);
-		}
-		result[shiftDigits] = digits[0] << shiftBits;
-		for (std::size_t i = 0; i < shiftDigits; ++i) {
-			result[i] = 0;
-		}
-	} else {
-		result.clear();
-	}
-}
-
-} // namespace
-
-Unsigned& Unsigned::shiftLeftBy(std::size_t bits)
-{
-	shiftDigitsLeft(digits, bits, digits);
-	normalize();
-	return *this;
-}
-
-Unsigned Unsigned::shiftedLeftBy(std::size_t bits) const
-{
-	Unsigned result;
-	shiftDigitsLeft(digits, bits, result.digits);
-	result.normalize();
-	return result;
-}
-
-namespace {
-
 Unsigned::DigitType rightBitsOf(Unsigned::DigitType digit, std::size_t shiftBits)
 {
 	return shiftBits ? digit << (std::numeric_limits<Unsigned::DigitType>::digits - shiftBits) : 0;
@@ -446,9 +403,11 @@ Unsigned Unsigned::fromHexadecimal(std::string::const_iterator first, std::strin
 	Unsigned result;
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '9') {
-			result.shiftLeftBy(4).add(*i - '0');
+			result <<= 4;
+			result.add(*i - '0');
 		} else if (*i >= 'a' && *i <= 'f') {
-			result.shiftLeftBy(4).add(*i - 'a' + 10);
+			result <<= 4;
+			result.add(*i - 'a' + 10);
 		} else {
 			throw InvalidCharacter(
 				"Unsigned::fromHexadecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
@@ -462,7 +421,8 @@ Unsigned Unsigned::fromOctal(std::string::const_iterator first, std::string::con
 	Unsigned result;
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '7') {
-			result.shiftLeftBy(3).add(*i - '0');
+			result <<= 3;
+			result.add(*i - '0');
 		} else {
 			throw InvalidCharacter(
 				"Unsigned::fromOctal(std::string::const_iterator, std::string::const_iterator): invalid character");
@@ -511,9 +471,9 @@ std::string Unsigned::toOctalString() const
 	return std::string(buffer.rbegin(), buffer.rend());
 }
 
-Unsigned::operator bool() const noexcept
+bool Unsigned::isZero() const noexcept
 {
-	return !digits.empty();
+	return digits.empty();
 }
 
 bool Unsigned::subtractAndTestNegative(const Unsigned& other)
