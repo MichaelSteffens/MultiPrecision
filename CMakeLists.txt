@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS NO)
 
-file(GLOB Unsigned_SRCS_G src/MultiPrecision/*.cpp)
+file(GLOB Unsigned_SRCS_G src/MultiPrecision/*.cpp src/MultiPrecision/Unsigned/*.cpp)
 add_library(Unsigned ${Unsigned_SRCS_G})
 add_library(${PROJECT_NAME}::Unsigned ALIAS Unsigned)
 set_target_properties(Unsigned PROPERTIES OUTPUT_NAME unsigned DEBUG_POSTFIX d)
