@@ -25,7 +25,7 @@ public:
 	class DivisionByUnsigned;
 	class DivisionByDigitType;
 	class ShiftToLeft;
-	class ShifToRight;
+	class ShiftToRight;
 
 	Unsigned();
 	Unsigned(const Unsigned& other);
@@ -49,8 +49,6 @@ public:
 	Unsigned& operator/=(const Unsigned& other);
 	Unsigned& operator%=(const Unsigned& other);
 	Unsigned& operator<<=(std::size_t bits);
-	Unsigned shiftedRightBy(std::size_t bits) const;
-	Unsigned& shiftRightBy(std::size_t bits);
 	Unsigned& operator>>=(std::size_t bits);
 	static Unsigned fromDecimal(std::string::const_iterator first, std::string::const_iterator last);
 	static Unsigned fromHexadecimal(std::string::const_iterator first, std::string::const_iterator last);

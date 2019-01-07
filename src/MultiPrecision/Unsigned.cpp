@@ -339,51 +339,6 @@ Unsigned Unsigned::times(DigitType other) const
 	return result;
 }
 
-namespace {
-
-Unsigned::DigitType rightBitsOf(Unsigned::DigitType digit, std::size_t shiftBits)
-{
-	return shiftBits ? digit << (std::numeric_limits<Unsigned::DigitType>::digits - shiftBits) : 0;
-}
-
-template<bool resultIsDigits>
-void shiftDigitsRight(const std::vector<Unsigned::DigitType>& digits, std::size_t bits, std::vector<Unsigned::DigitType>& result)
-{
-	std::size_t shiftDigits = bits / std::numeric_limits<Unsigned::DigitType>::digits;
-	std::size_t shiftBits = bits % std::numeric_limits<Unsigned::DigitType>::digits;
-	if (shiftDigits < digits.size()) {
-		if (!resultIsDigits) {
-			result.resize(digits.size() - shiftDigits);
-		}
-		for (std::size_t i = 0; i < digits.size() - shiftDigits - 1; ++i) {
-			result[i] = (digits[i + shiftDigits] >> shiftBits) | rightBitsOf(digits[i + shiftDigits + 1], shiftBits);
-		}
-		result[digits.size() - shiftDigits - 1] = digits[digits.size() - 1] >> shiftBits;
-		if (resultIsDigits) {
-			result.resize(digits.size() - shiftDigits);
-		}
-	} else {
-		result.clear();
-	}
-}
-
-} // namespace
-
-Unsigned& Unsigned::shiftRightBy(std::size_t bits)
-{
-	shiftDigitsRight<true>(digits, bits, digits);
-	normalize();
-	return *this;
-}
-
-Unsigned Unsigned::shiftedRightBy(std::size_t bits) const
-{
-	Unsigned result;
-	shiftDigitsRight<false>(digits, bits, result.digits);
-	result.normalize();
-	return result;
-}
-
 Unsigned Unsigned::fromDecimal(std::string::const_iterator first, std::string::const_iterator last)
 {
 	Unsigned result;
@@ -447,11 +402,11 @@ std::string Unsigned::toHexadecimalString() const
 {
 	std::vector<char> buffer;
 	DigitType remainder = digits.empty() ? 0 : digits.front() & 0xf;
-	Unsigned quotient = shiftedRightBy(4);
+	Unsigned quotient = *this >> 4;
 	buffer.push_back(remainder < 10 ? '0' + remainder : 'a' + remainder - 10);
 	while (!quotient.digits.empty()) {
 		remainder = quotient.digits.empty() ? 0 : quotient.digits.front() & 0xf;
-		quotient.shiftRightBy(4);
+		quotient >>= 4;
 		buffer.push_back(remainder < 10 ? '0' + remainder : 'a' + remainder - 10);
 	}
 	return std::string(buffer.rbegin(), buffer.rend());
@@ -461,11 +416,11 @@ std::string Unsigned::toOctalString() const
 {
 	std::vector<char> buffer;
 	DigitType remainder = digits.empty() ? 0 : digits.front() & 0x7;
-	Unsigned quotient = shiftedRightBy(3);
+	Unsigned quotient = *this >> 3;
 	buffer.push_back('0' + remainder);
 	while (!quotient.digits.empty()) {
 		remainder = quotient.digits.empty() ? 0 : quotient.digits.front() & 0x7;
-		quotient.shiftRightBy(3);
+		quotient >>= 3;
 		buffer.push_back('0' + remainder);
 	}
 	return std::string(buffer.rbegin(), buffer.rend());

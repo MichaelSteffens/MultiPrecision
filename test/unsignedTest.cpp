@@ -59,22 +59,22 @@ TEST_CASE("Unsigned shift right", "[unsigned]")
 	MultiPrecision::Unsigned testee("0xfeedbabe0000");
 	SECTION("Shift by 2")
 	{
-		REQUIRE(testee.shiftedRightBy(2) == "0x3fbb6eaf8000");
+		REQUIRE("0x3fbb6eaf8000" == testee >> 2);
 		REQUIRE(testee == "0xfeedbabe0000");
 	}
 	SECTION("Shift by 10")
 	{
-		REQUIRE(testee.shiftedRightBy(10) == "0x3fbb6eaf80");
+		REQUIRE("0x3fbb6eaf80" == testee >> 10);
 		REQUIRE(testee == "0xfeedbabe0000");
 	}
 	SECTION("Shift by 15")
 	{
-		REQUIRE(testee.shiftedRightBy(15) == "0x1fddb757c");
+		REQUIRE("0x1fddb757c" == testee >> 15);
 		REQUIRE(testee == "0xfeedbabe0000");
 	}
 	SECTION("Shift by 16")
 	{
-		REQUIRE(testee.shiftedRightBy(16) == "0xfeedbabe");
+		REQUIRE("0xfeedbabe" == testee >> 16);
 		REQUIRE(testee == "0xfeedbabe0000");
 	}
 }
@@ -84,22 +84,22 @@ TEST_CASE("Unsigned shift right in place", "[unsigned]")
 	MultiPrecision::Unsigned testee("0xfeedbabe0000");
 	SECTION("Shift by 2")
 	{
-		testee.shiftRightBy(2);
+		testee >>= 2;
 		REQUIRE(testee == "0x3fbb6eaf8000");
 	}
 	SECTION("Shift by 10")
 	{
-		testee.shiftRightBy(10);
+		testee >>= 10;
 		REQUIRE(testee == "0x3fbb6eaf80");
 	}
 	SECTION("Shift by 15")
 	{
-		testee.shiftRightBy(15);
+		testee >>= 15;
 		REQUIRE(testee == "0x1fddb757c");
 	}
 	SECTION("Shift by 16")
 	{
-		testee.shiftRightBy(16);
+		testee >>= 16;
 		REQUIRE(testee == "0xfeedbabe");
 	}
 }

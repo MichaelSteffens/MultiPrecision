@@ -16,26 +16,27 @@ class Unsigned::ShiftToLeft
 public:
 	ShiftToLeft(const Unsigned& n, Unsigned& result, std::size_t bits) :
 		digits(n.digits),
-		result(result.digits),
+		result(result),
 		shiftDigits(bits / std::numeric_limits<DigitType>::digits),
 		shiftBits(bits % std::numeric_limits<DigitType>::digits)
 	{
 	}
 
-	void operator()()
+	void run()
 	{
 		if (!digits.empty()) {
-			result.resize(digits.size() + shiftDigits + 1);
-			result[result.size() - 1] = leftBitsOf(digits[result.size() - shiftDigits - 2]);
-			for (std::size_t i = result.size() - 2; i > shiftDigits; --i) {
-				result[i] = rightBitsOf(digits[i - shiftDigits]) | leftBitsOf(digits[i - shiftDigits - 1]);
+			result.digits.resize(digits.size() + shiftDigits + 1);
+			result.digits[result.digits.size() - 1] = leftBitsOf(digits[result.digits.size() - shiftDigits - 2]);
+			for (std::size_t i = result.digits.size() - 2; i > shiftDigits; --i) {
+				result.digits[i] = rightBitsOf(digits[i - shiftDigits]) | leftBitsOf(digits[i - shiftDigits - 1]);
 			}
-			result[shiftDigits] = rightBitsOf(digits[0]);
+			result.digits[shiftDigits] = rightBitsOf(digits[0]);
 			for (std::size_t i = 0; i < shiftDigits; ++i) {
-				result[i] = 0;
+				result.digits[i] = 0;
 			}
+			result.normalize();
 		} else {
-			result.clear();
+			result.digits.clear();
 		}
 	}
 
@@ -51,21 +52,21 @@ private:
 	}
 
 	const decltype(Unsigned::digits)& digits;
-	decltype(Unsigned::digits)& result;
+	Unsigned& result;
 	const std::size_t shiftDigits;
 	const std::size_t shiftBits;
 };
 
 Unsigned& Unsigned::operator<<=(std::size_t bits)
 {
-	ShiftToLeft(*this, *this, bits)();
+	ShiftToLeft(*this, *this, bits).run();
 	return *this;
 }
 
 Unsigned operator<<(const Unsigned& n, std::size_t bits)
 {
 	Unsigned result;
-	Unsigned::ShiftToLeft(n, result, bits)();
+	Unsigned::ShiftToLeft(n, result, bits).run();
 	return result;
 }
 

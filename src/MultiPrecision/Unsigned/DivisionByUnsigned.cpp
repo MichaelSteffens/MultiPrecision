@@ -128,7 +128,7 @@ private:
 	// Revert fraction expansion
 	void reduceRemainder()
 	{
-		remainder.shiftRightBy(expansionShift);
+		remainder >>= expansionShift;
 	}
 
 	Unsigned remainder;
