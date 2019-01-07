@@ -5,15 +5,15 @@
 //
 
 
-#include "MultiPrecision/UnsignedUnderflow.h"
+#include "MultiPrecision/Underflow.h"
 
 namespace MultiPrecision {
 
-UnsignedUnderflow::UnsignedUnderflow(const std::string what) : Error(what)
+Underflow::Underflow(const std::string what) : Error(what)
 {
 }
 
-UnsignedUnderflow::~UnsignedUnderflow()
+Underflow::~Underflow()
 {
 }
 

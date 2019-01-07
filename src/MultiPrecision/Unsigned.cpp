@@ -9,7 +9,7 @@
 #include "MultiPrecision/DigitPairType.h"
 #include "MultiPrecision/DivisionByZero.h"
 #include "MultiPrecision/InvalidCharacter.h"
-#include "MultiPrecision/UnsignedUnderflow.h"
+#include "MultiPrecision/Underflow.h"
 #include <iostream>
 #include <limits>
 
@@ -279,7 +279,7 @@ Unsigned Unsigned::minus(const Unsigned& other) const
 {
 	Unsigned result;
 	if (subtractDigitsAndTestNegative(digits, other.digits, result.digits)) {
-		throw UnsignedUnderflow("Unsigned::minus(const Unsigned&): result is negative!");
+		throw Underflow("Unsigned::minus(const Unsigned&): result is negative!");
 	}
 	result.normalize();
 	return result;
@@ -288,7 +288,7 @@ Unsigned Unsigned::minus(const Unsigned& other) const
 Unsigned& Unsigned::subtract(const Unsigned& other)
 {
 	if (subtractDigitsAndTestNegative(digits, other.digits, digits)) {
-		throw UnsignedUnderflow("Unsigned::subtract(const Unsigned&): result is negative!");
+		throw Underflow("Unsigned::subtract(const Unsigned&): result is negative!");
 	}
 	normalize();
 	return *this;
@@ -297,7 +297,7 @@ Unsigned& Unsigned::subtract(const Unsigned& other)
 Unsigned& Unsigned::subtract(DigitType other)
 {
 	if (subtractDigitsAndTestNegative(digits, other, digits)) {
-		throw UnsignedUnderflow("Unsigned::subtract(DigitType): result is negative!");
+		throw Underflow("Unsigned::subtract(DigitType): result is negative!");
 	}
 	normalize();
 	return *this;
