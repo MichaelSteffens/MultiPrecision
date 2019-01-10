@@ -121,7 +121,7 @@ private:
 	void addBack(std::size_t i)
 	{
 		--quotient.digits[i];
-		remainderFragment.add(divisor);
+		remainderFragment += divisor;
 		remainderFragment.digits.pop_back();
 	}
 

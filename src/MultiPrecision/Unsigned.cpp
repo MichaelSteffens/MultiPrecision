@@ -124,94 +124,6 @@ bool Unsigned::lessThanOrEqual(const Unsigned& other) const noexcept
 
 namespace {
 
-void addDigits(
-	const std::vector<Unsigned::DigitType>& lhs,
-	const std::vector<Unsigned::DigitType>& rhs,
-	std::vector<Unsigned::DigitType>& result)
-{
-	std::size_t lhsLength = lhs.size();
-	std::size_t rhsLength = rhs.size();
-	result.resize(std::max(lhsLength, rhsLength));
-	DigitPairType carry = 0;
-	std::size_t i = 0;
-	while (i < std::min(lhsLength, rhsLength)) {
-		DigitPairType tmp = carry + lhs[i] + rhs[i];
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	while (i < lhsLength) {
-		DigitPairType tmp = carry + lhs[i];
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	while (i < rhsLength) {
-		DigitPairType tmp = carry + rhs[i];
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	if (carry) {
-		result.push_back(carry & std::numeric_limits<Unsigned::DigitType>::max());
-	}
-}
-
-void addDigits(const std::vector<Unsigned::DigitType>& lhs, Unsigned::DigitType rhs, std::vector<Unsigned::DigitType>& result)
-{
-	std::size_t lhsLength = lhs.size();
-	result.resize(std::max(lhsLength + 1, std::size_t(1)));
-	DigitPairType carry = 0;
-	std::size_t i = 0;
-	while (i < std::min(lhsLength, std::size_t(1))) {
-		DigitPairType tmp = static_cast<DigitPairType>(lhs[i]) + rhs;
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	while (i < lhsLength) {
-		DigitPairType tmp = carry + lhs[i];
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	while (i < 1) {
-		DigitPairType tmp = carry + (i ? 0 : (i ? 0 : rhs));
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	if (carry) {
-		result.push_back(carry & std::numeric_limits<Unsigned::DigitType>::max());
-	}
-}
-
-} // namespace
-
-Unsigned Unsigned::plus(const Unsigned& other) const
-{
-	Unsigned result;
-	addDigits(digits, other.digits, result.digits);
-	result.normalize();
-	return result;
-}
-
-Unsigned& Unsigned::add(const Unsigned& other)
-{
-	addDigits(digits, other.digits, digits);
-	normalize();
-	return *this;
-}
-
-Unsigned& Unsigned::add(DigitType other)
-{
-	addDigits(digits, other, digits);
-	normalize();
-	return *this;
-}
-
-namespace {
-
 bool subtractDigitsAndTestNegative(
 	const std::vector<Unsigned::DigitType>& lhs,
 	const std::vector<Unsigned::DigitType>& rhs,
@@ -344,7 +256,8 @@ Unsigned Unsigned::fromDecimal(std::string::const_iterator first, std::string::c
 	Unsigned result;
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '9') {
-			result = result.times(10).add(*i - '0');
+			result = result.times(10);
+			result += *i - '0';
 		} else {
 			throw InvalidCharacter(
 				"Unsigned::fromDecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
@@ -359,10 +272,10 @@ Unsigned Unsigned::fromHexadecimal(std::string::const_iterator first, std::strin
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '9') {
 			result <<= 4;
-			result.add(*i - '0');
+			result += *i - '0';
 		} else if (*i >= 'a' && *i <= 'f') {
 			result <<= 4;
-			result.add(*i - 'a' + 10);
+			result += *i - 'a' + 10;
 		} else {
 			throw InvalidCharacter(
 				"Unsigned::fromHexadecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
@@ -377,7 +290,7 @@ Unsigned Unsigned::fromOctal(std::string::const_iterator first, std::string::con
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '7') {
 			result <<= 3;
-			result.add(*i - '0');
+			result += *i - '0';
 		} else {
 			throw InvalidCharacter(
 				"Unsigned::fromOctal(std::string::const_iterator, std::string::const_iterator): invalid character");

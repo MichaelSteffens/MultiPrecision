@@ -4,6 +4,50 @@
 #include "MultiPrecision/Unsigned.h"
 #include <sstream>
 
+TEST_CASE("Unsigned addition", "[unsigned]")
+{
+	SECTION("Small and large number")
+	{
+		MultiPrecision::Unsigned testee("0xfeedbabefeedbabe");
+		REQUIRE(testee + "0xfffffffffffffffffeedbabefeedbabe" == "0x10000000000000000fddb757dfddb757c");
+		REQUIRE(testee == "0xfeedbabefeedbabe");
+	}
+	SECTION("Large and small number")
+	{
+		MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
+		REQUIRE(testee + "0xfeedbabefeedbabe" == "0xfeedbabefeedbabffddb757dfddb757c");
+		REQUIRE(testee == "0xfeedbabefeedbabefeedbabefeedbabe");
+	}
+	SECTION("Equal size numbers")
+	{
+		MultiPrecision::Unsigned testee("0xfeedbabefeedbabe");
+		REQUIRE(testee + "0xbabefeedbabefeed" == "0x1b9acb9acb9acb9ab");
+		REQUIRE(testee == "0xfeedbabefeedbabe");
+	}
+}
+
+TEST_CASE("Unsigned addition in place", "[unsigned]")
+{
+	SECTION("Small and large number")
+	{
+		MultiPrecision::Unsigned testee("0xfeedbabefeedbabe");
+		testee += "0xfffffffffffffffffeedbabefeedbabe";
+		REQUIRE(testee == "0x10000000000000000fddb757dfddb757c");
+	}
+	SECTION("Large and small number")
+	{
+		MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
+		testee += "0xfeedbabefeedbabe";
+		REQUIRE(testee == "0xfeedbabefeedbabffddb757dfddb757c");
+	}
+	SECTION("Equal size numbers")
+	{
+		MultiPrecision::Unsigned testee("0xfeedbabefeedbabe");
+		testee += "0xbabefeedbabefeed";
+		REQUIRE(testee == "0x1b9acb9acb9acb9ab");
+	}
+}
+
 TEST_CASE("Unsigned shift left", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe");
@@ -187,8 +231,6 @@ TEST_CASE("Unsigned division need reduction by two", "[unsigned]")
 	{
 		auto result =
 			MultiPrecision::Unsigned("0xffffffff0000000000000000").dividedBy(MultiPrecision::Unsigned("0x80000000ffffffff"));
-		std::cerr << "result.quotient=" << result.quotient.toHexadecimalString() << std::endl;
-		std::cerr << "result.remainder=" << result.remainder.toHexadecimalString() << std::endl;
 		REQUIRE(result.quotient == "0x1fffffffa");
 		REQUIRE(result.remainder == "0x7fffffffa");
 	}

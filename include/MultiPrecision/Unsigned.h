@@ -36,9 +36,10 @@ public:
 	bool lessThan(const Unsigned& other) const noexcept;
 	bool lessThanOrEqual(const Unsigned& other) const noexcept;
 	Unsigned plus(const Unsigned& other) const;
-	Unsigned& add(const Unsigned& other);
+	Unsigned& operator+=(const Unsigned& other);
 	Unsigned minus(const Unsigned& other) const;
 	Unsigned& subtract(const Unsigned& other);
+	Unsigned& operator-=(const Unsigned& other);
 	Unsigned times(const Unsigned& other) const;
 	DivisionResult dividedBy(const Unsigned& other) const;
 	Unsigned& operator/=(const Unsigned& other);
@@ -54,14 +55,18 @@ public:
 	bool isZero() const noexcept;
 
 private:
+	class AdditionOfUnsigned;
+	class AdditionOfDigitType;
 	class DivisionByUnsigned;
 	class DivisionByDigitType;
 	class ShiftToLeft;
 	class ShiftToRight;
 
-	Unsigned& add(DigitType other);
+	Unsigned& operator+=(DigitType other);
 	Unsigned& subtract(DigitType other);
+	Unsigned& operator-=(DigitType other);
 	Unsigned times(DigitType factor) const;
+	Unsigned& operator*=(DigitType other);
 	DivisionResult dividedBy(DigitType divisor) const;
 	Unsigned& operator/=(DigitType divisor);
 	Unsigned& operator%=(DigitType divisor);
@@ -75,6 +80,9 @@ private:
 	friend bool operator<=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 	friend bool operator>(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 	friend bool operator>=(const Unsigned& lhs, const Unsigned& rhs) noexcept;
+	friend Unsigned operator+(const Unsigned& lhs, const Unsigned& rhs);
+	friend Unsigned operator-(const Unsigned& lhs, const Unsigned& rhs);
+	friend Unsigned operator*(const Unsigned& lhs, const Unsigned& rhs);
 	friend Unsigned operator/(const Unsigned& lhs, const Unsigned& rhs);
 	friend Unsigned operator%(const Unsigned& lhs, const Unsigned& rhs);
 	friend Unsigned operator<<(const Unsigned& n, std::size_t bits);
