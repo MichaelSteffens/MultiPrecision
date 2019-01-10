@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	void run()
+	void shiftBitsInDigits()
 	{
 		if (!digits.empty()) {
 			result.resize(digits.size() + digitShift + 1);
@@ -58,7 +58,7 @@ private:
 
 Unsigned& Unsigned::operator<<=(std::size_t bits)
 {
-	ShiftToLeft(digits, digits, bits).run();
+	ShiftToLeft(digits, digits, bits).shiftBitsInDigits();
 	normalize();
 	return *this;
 }
@@ -66,7 +66,7 @@ Unsigned& Unsigned::operator<<=(std::size_t bits)
 Unsigned operator<<(const Unsigned& n, std::size_t bits)
 {
 	Unsigned result;
-	Unsigned::ShiftToLeft(n.digits, result.digits, bits).run();
+	Unsigned::ShiftToLeft(n.digits, result.digits, bits).shiftBitsInDigits();
 	result.normalize();
 	return result;
 }

@@ -23,7 +23,7 @@ public:
 	}
 
 	template<bool resultIsDigits>
-	void run()
+	void shiftBitsInDigits()
 	{
 		if (digitShift < digits.size()) {
 			if (!resultIsDigits) {
@@ -60,7 +60,7 @@ private:
 
 Unsigned& Unsigned::operator>>=(std::size_t bits)
 {
-	ShiftToRight(digits, digits, bits).run<true>();
+	ShiftToRight(digits, digits, bits).shiftBitsInDigits<true>();
 	normalize();
 	return *this;
 }
@@ -68,7 +68,7 @@ Unsigned& Unsigned::operator>>=(std::size_t bits)
 Unsigned operator>>(const Unsigned& n, std::size_t bits)
 {
 	Unsigned result;
-	Unsigned::ShiftToRight(n.digits, result.digits, bits).run<false>();
+	Unsigned::ShiftToRight(n.digits, result.digits, bits).shiftBitsInDigits<false>();
 	result.normalize();
 	return result;
 }
