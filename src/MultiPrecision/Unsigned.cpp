@@ -7,9 +7,7 @@
 
 #include "MultiPrecision/Unsigned.h"
 #include "MultiPrecision/DigitPairType.h"
-#include "MultiPrecision/DivisionByZero.h"
 #include "MultiPrecision/InvalidCharacter.h"
-#include "MultiPrecision/Underflow.h"
 #include <iostream>
 #include <limits>
 
@@ -120,99 +118,6 @@ bool Unsigned::lessThanOrEqual(const Unsigned& other) const noexcept
 		}
 	}
 	return true;
-}
-
-namespace {
-
-bool subtractDigitsAndTestNegative(
-	const std::vector<Unsigned::DigitType>& lhs,
-	const std::vector<Unsigned::DigitType>& rhs,
-	std::vector<Unsigned::DigitType>& result)
-{
-	std::size_t lhsLength = lhs.size();
-	std::size_t rhsLength = rhs.size();
-	result.resize(std::max(lhsLength, rhsLength));
-	DigitPairType borrow = 0;
-	std::size_t i = 0;
-	while (i < std::min(lhsLength, rhsLength)) {
-		DigitPairType tmp = lhs[i] - (rhs[i] + borrow);
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	while (i < lhsLength) {
-		DigitPairType tmp = lhs[i] - borrow;
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	while (i < rhsLength) {
-		DigitPairType tmp = 0 - (rhs[i] + borrow);
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	return borrow != 0;
-}
-
-bool subtractDigitsAndTestNegative(
-	const std::vector<Unsigned::DigitType>& lhs,
-	Unsigned::DigitType rhs,
-	std::vector<Unsigned::DigitType>& result)
-{
-	std::size_t lhsLength = lhs.size();
-	result.resize(std::max(lhsLength, std::size_t(1)));
-	DigitPairType borrow = 0;
-	std::size_t i = 0;
-	while (i < std::min(lhsLength, std::size_t(1))) {
-		DigitPairType tmp = static_cast<DigitPairType>(lhs[0]) - rhs;
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	while (i < lhsLength) {
-		DigitPairType tmp = lhs[i] - borrow;
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	while (i < 1) {
-		DigitPairType tmp = 0 - ((i ? 0 : rhs) + borrow);
-		result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
-		borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
-		++i;
-	}
-	return borrow != 0;
-}
-
-} // namespace
-
-Unsigned Unsigned::minus(const Unsigned& other) const
-{
-	Unsigned result;
-	if (subtractDigitsAndTestNegative(digits, other.digits, result.digits)) {
-		throw Underflow("Unsigned::minus(const Unsigned&): result is negative!");
-	}
-	result.normalize();
-	return result;
-}
-
-Unsigned& Unsigned::subtract(const Unsigned& other)
-{
-	if (subtractDigitsAndTestNegative(digits, other.digits, digits)) {
-		throw Underflow("Unsigned::subtract(const Unsigned&): result is negative!");
-	}
-	normalize();
-	return *this;
-}
-
-Unsigned& Unsigned::subtract(DigitType other)
-{
-	if (subtractDigitsAndTestNegative(digits, other, digits)) {
-		throw Underflow("Unsigned::subtract(DigitType): result is negative!");
-	}
-	normalize();
-	return *this;
 }
 
 Unsigned Unsigned::times(const Unsigned& other) const
@@ -342,11 +247,6 @@ std::string Unsigned::toOctalString() const
 bool Unsigned::isZero() const noexcept
 {
 	return digits.empty();
-}
-
-bool Unsigned::subtractAndTestNegative(const Unsigned& other)
-{
-	return subtractDigitsAndTestNegative(digits, other.digits, digits);
 }
 
 void Unsigned::normalize()

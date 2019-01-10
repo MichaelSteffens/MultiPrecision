@@ -48,6 +48,49 @@ TEST_CASE("Unsigned addition in place", "[unsigned]")
 	}
 }
 
+TEST_CASE("Unsigned subtraction", "[unsigned]")
+{
+	SECTION("Negative result")
+	{
+		MultiPrecision::Unsigned testee("0xbabefeedbabefeed");
+		REQUIRE_THROWS(testee - "0xfeedbabefeedbabe");
+		REQUIRE(testee == "0xbabefeedbabefeed");
+	}
+	SECTION("Large and small number")
+	{
+		MultiPrecision::Unsigned testee("0xbabefeedbabefeedbabefeedbabefeed");
+		REQUIRE(testee - "0xfeedbabefeedbabe" == "0xbabefeedbabefeecbbd1442ebbd1442f");
+		REQUIRE(testee == "0xbabefeedbabefeedbabefeedbabefeed");
+	}
+	SECTION("Equal size numbers")
+	{
+		MultiPrecision::Unsigned testee("0xfeedbabefeedbabe");
+		REQUIRE(testee - "0xbabefeedbabefeed" == "0x442ebbd1442ebbd1");
+		REQUIRE(testee == "0xfeedbabefeedbabe");
+	}
+}
+
+TEST_CASE("Unsigned subtraction in place", "[unsigned]")
+{
+	SECTION("Negative result")
+	{
+		MultiPrecision::Unsigned testee("0xbabefeedbabefeed");
+		REQUIRE_THROWS(testee -= "0xfeedbabefeedbabe");
+	}
+	SECTION("Large and small number")
+	{
+		MultiPrecision::Unsigned testee("0xbabefeedbabefeedbabefeedbabefeed");
+		testee -= "0xfeedbabefeedbabe";
+		REQUIRE(testee == "0xbabefeedbabefeecbbd1442ebbd1442f");
+	}
+	SECTION("Equal size numbers")
+	{
+		MultiPrecision::Unsigned testee("0xfeedbabefeedbabe");
+		testee -= "0xbabefeedbabefeed";
+		REQUIRE(testee == "0x442ebbd1442ebbd1");
+	}
+}
+
 TEST_CASE("Unsigned shift left", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe");

@@ -7,7 +7,6 @@
 
 #include "MultiPrecision/DigitPairType.h"
 #include "MultiPrecision/DivisionByZero.h"
-#include "MultiPrecision/Underflow.h"
 #include "MultiPrecision/Unsigned.h"
 #include <iostream>
 #include <limits>
@@ -64,15 +63,14 @@ private:
 	void calculateQuotientDigit(std::size_t i)
 	{
 		remainder.digits.resize(i + 2);
-		quotient.digits[i] = ((static_cast<DigitPairType>(remainder.digits[i + 1]) << std::numeric_limits<DigitType>::digits) +
-							  remainder.digits[i]) /
-							 divisor;
+		quotient.digits[i] =
+			((DigitPairType(remainder.digits[i + 1]) << std::numeric_limits<DigitType>::digits) + remainder.digits[i]) / divisor;
 	}
 
 	void multiplyAndSubtract(std::size_t i)
 	{
 		remainderFragment.digits.assign(remainder.digits.begin() + i, remainder.digits.end());
-		remainderFragment.subtract(Unsigned(static_cast<DigitPairType>(divisor) * quotient.digits[i]));
+		remainderFragment -= Unsigned(DigitPairType(divisor) * quotient.digits[i]);
 		remainder.digits.resize(i);
 		remainder.digits.insert(remainder.digits.end(), remainderFragment.digits.begin(), remainderFragment.digits.end());
 	}
