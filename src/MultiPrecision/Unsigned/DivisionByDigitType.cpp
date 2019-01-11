@@ -8,7 +8,6 @@
 #include "MultiPrecision/DigitPairType.h"
 #include "MultiPrecision/DivisionByZero.h"
 #include "MultiPrecision/Unsigned.h"
-#include <iostream>
 #include <limits>
 
 namespace MultiPrecision {

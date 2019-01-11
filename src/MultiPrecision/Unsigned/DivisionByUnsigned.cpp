@@ -7,9 +7,7 @@
 
 #include "MultiPrecision/DigitPairType.h"
 #include "MultiPrecision/DivisionByZero.h"
-#include "MultiPrecision/Underflow.h"
 #include "MultiPrecision/Unsigned.h"
-#include <iostream>
 #include <limits>
 
 namespace MultiPrecision {
@@ -111,7 +109,7 @@ private:
 	void multiplyAndSubtract(std::size_t i)
 	{
 		remainderFragment.digits.assign(remainder.digits.begin() + i, remainder.digits.end());
-		if (remainderFragment.subtractAndTestNegative(divisor.times(trialQuotient))) {
+		if (remainderFragment.subtractAndTestNegative(divisor * trialQuotient)) {
 			addBack(i);
 		}
 		remainder.digits.resize(i);

@@ -120,48 +120,12 @@ bool Unsigned::lessThanOrEqual(const Unsigned& other) const noexcept
 	return true;
 }
 
-Unsigned Unsigned::times(const Unsigned& other) const
-{
-	std::size_t length = digits.size();
-	std::size_t otherLength = other.digits.size();
-	Unsigned result;
-	result.digits.assign(length + otherLength, 0);
-	for (std::size_t j = 0; j < otherLength; ++j) {
-		DigitPairType carry = 0;
-		for (std::size_t i = 0; i < length; ++i) {
-			DigitPairType tmp =
-				static_cast<DigitPairType>(digits[i]) * static_cast<DigitPairType>(other.digits[j]) + result.digits[i + j] + carry;
-			result.digits[i + j] = tmp & std::numeric_limits<DigitType>::max();
-			carry = tmp >> std::numeric_limits<DigitType>::digits;
-		}
-		result.digits[length + j] = carry;
-	}
-	result.normalize();
-	return result;
-}
-
-Unsigned Unsigned::times(DigitType other) const
-{
-	std::size_t length = digits.size();
-	Unsigned result;
-	result.digits.assign(length + 1, 0);
-	DigitPairType carry = 0;
-	for (std::size_t i = 0; i < length; ++i) {
-		DigitPairType tmp = static_cast<DigitPairType>(digits[i]) * static_cast<DigitPairType>(other) + result.digits[i] + carry;
-		result.digits[i] = tmp & std::numeric_limits<DigitType>::max();
-		carry = tmp >> std::numeric_limits<DigitType>::digits;
-	}
-	result.digits[length] = carry;
-	result.normalize();
-	return result;
-}
-
 Unsigned Unsigned::fromDecimal(std::string::const_iterator first, std::string::const_iterator last)
 {
 	Unsigned result;
 	for (std::string::const_iterator i = first; i != last; ++i) {
 		if (*i >= '0' && *i <= '9') {
-			result = result.times(10);
+			result *= 10;
 			result += *i - '0';
 		} else {
 			throw InvalidCharacter(

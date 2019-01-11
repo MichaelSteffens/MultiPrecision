@@ -91,6 +91,38 @@ TEST_CASE("Unsigned subtraction in place", "[unsigned]")
 	}
 }
 
+TEST_CASE("Unsigned multiplication", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
+	SECTION("Small and large number")
+	{
+		REQUIRE(
+			testee * "0xbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeed" ==
+			"0xb9f6ebfbfa503ddd3aa98fbe7b02e19f01654785016547850165478501654784476e5b89071509a7c6bbb7c6866265e6");
+		REQUIRE(testee == "0xfeedbabefeedbabefeedbabefeedbabe");
+	}
+	SECTION("Large and small number")
+	{
+		REQUIRE(testee * "0xbabefeedbabefeed" == "0xb9f6ebfbfa503ddc80b2a3c280b2a3c1c6bbb7c6866265e6");
+		REQUIRE(testee == "0xfeedbabefeedbabefeedbabefeedbabe");
+	}
+}
+
+TEST_CASE("Unsigned multiplication in place", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
+	SECTION("Small and large number")
+	{
+		testee *= "0xbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeedbabefeed";
+		REQUIRE(testee == "0xb9f6ebfbfa503ddd3aa98fbe7b02e19f01654785016547850165478501654784476e5b89071509a7c6bbb7c6866265e6");
+	}
+	SECTION("Large and small number")
+	{
+		testee *= "0xbabefeedbabefeed";
+		REQUIRE(testee == "0xb9f6ebfbfa503ddc80b2a3c280b2a3c1c6bbb7c6866265e6");
+	}
+}
+
 TEST_CASE("Unsigned shift left", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabe");

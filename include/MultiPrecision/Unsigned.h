@@ -37,7 +37,7 @@ public:
 	bool lessThanOrEqual(const Unsigned& other) const noexcept;
 	Unsigned& operator+=(const Unsigned& other);
 	Unsigned& operator-=(const Unsigned& other);
-	Unsigned times(const Unsigned& other) const;
+	Unsigned& operator*=(const Unsigned& other);
 	DivisionResult dividedBy(const Unsigned& other) const;
 	Unsigned& operator/=(const Unsigned& other);
 	Unsigned& operator%=(const Unsigned& other);
@@ -56,6 +56,8 @@ private:
 	class AdditionOfDigitType;
 	class SubtractionOfUnsigned;
 	class SubtractionOfDigitType;
+	class MultiplicationWithUnsigned;
+	class MultiplicationWithDigitType;
 	class DivisionByUnsigned;
 	class DivisionByDigitType;
 	class ShiftToLeft;
@@ -63,8 +65,8 @@ private:
 
 	Unsigned& operator+=(DigitType other);
 	Unsigned& operator-=(DigitType other);
-	Unsigned times(DigitType factor) const;
 	Unsigned& operator*=(DigitType other);
+	Unsigned operator*(DigitType other) const;
 	DivisionResult dividedBy(DigitType divisor) const;
 	Unsigned& operator/=(DigitType divisor);
 	Unsigned& operator%=(DigitType divisor);
