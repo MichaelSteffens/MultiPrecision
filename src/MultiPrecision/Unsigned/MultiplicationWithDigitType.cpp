@@ -15,28 +15,31 @@ namespace MultiPrecision {
 class Unsigned::MultiplicationWithDigitType
 {
 public:
-	MultiplicationWithDigitType(const Unsigned& lhs, DigitType rhs) : lhs(lhs), rhs(rhs), lhsLength(lhs.digits.size())
+	MultiplicationWithDigitType(const Unsigned& multiplicand, DigitType multiplier) :
+		multiplicand(multiplicand),
+		multiplier(multiplier),
+		multiplicandLength(multiplicand.digits.size())
 	{
 	}
 
 	Unsigned getProduct()
 	{
-		product.digits.assign(lhsLength + 1, 0);
+		product.digits.assign(multiplicandLength + 1, 0);
 		DigitPairType carry = 0;
-		for (std::size_t i = 0; i < lhsLength; ++i) {
-			DigitPairType tmp = DigitPairType(lhs.digits[i]) * rhs + product.digits[i] + carry;
+		for (std::size_t i = 0; i < multiplicandLength; ++i) {
+			DigitPairType tmp = DigitPairType(multiplicand.digits[i]) * multiplier + product.digits[i] + carry;
 			product.digits[i] = tmp & std::numeric_limits<DigitType>::max();
 			carry = tmp >> std::numeric_limits<DigitType>::digits;
 		}
-		product.digits[lhsLength] = carry;
+		product.digits[multiplicandLength] = carry;
 		product.normalize();
 		return std::move(product);
 	}
 
 private:
-	const Unsigned& lhs;
-	const DigitType rhs;
-	const std::size_t lhsLength;
+	const Unsigned& multiplicand;
+	const DigitType multiplier;
+	const std::size_t multiplicandLength;
 	Unsigned product;
 };
 

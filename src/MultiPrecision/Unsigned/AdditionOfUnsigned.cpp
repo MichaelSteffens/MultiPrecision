@@ -15,51 +15,51 @@ class Unsigned::AdditionOfUnsigned
 {
 public:
 	AdditionOfUnsigned(
-		const decltype(Unsigned::digits)& lhs,
-		const decltype(Unsigned::digits)& rhs,
-		decltype(Unsigned::digits)& result) :
-		lhs(lhs),
-		rhs(rhs),
-		result(result),
-		lhsLength(lhs.size()),
-		rhsLength(rhs.size())
+		const decltype(Unsigned::digits)& augend,
+		const decltype(Unsigned::digits)& addend,
+		decltype(Unsigned::digits)& sum) :
+		augend(augend),
+		addend(addend),
+		sum(sum),
+		augendLength(augend.size()),
+		addendLength(addend.size())
 	{
 	}
 
 	void addDigits()
 	{
-		result.resize(std::max(lhsLength, rhsLength));
+		sum.resize(std::max(augendLength, addendLength));
 		DigitPairType carry = 0;
 		std::size_t i = 0;
-		while (i < std::min(lhsLength, rhsLength)) {
-			DigitPairType tmp = carry + lhs[i] + rhs[i];
-			result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
+		while (i < std::min(augendLength, addendLength)) {
+			DigitPairType tmp = carry + augend[i] + addend[i];
+			sum[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
 			carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
 			++i;
 		}
-		while (i < lhsLength) {
-			DigitPairType tmp = carry + lhs[i];
-			result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
+		while (i < augendLength) {
+			DigitPairType tmp = carry + augend[i];
+			sum[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
 			carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
 			++i;
 		}
-		while (i < rhsLength) {
-			DigitPairType tmp = carry + rhs[i];
-			result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
+		while (i < addendLength) {
+			DigitPairType tmp = carry + addend[i];
+			sum[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
 			carry = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
 			++i;
 		}
 		if (carry) {
-			result.push_back(carry & std::numeric_limits<Unsigned::DigitType>::max());
+			sum.push_back(carry & std::numeric_limits<Unsigned::DigitType>::max());
 		}
 	}
 
 private:
-	const decltype(Unsigned::digits)& lhs;
-	const decltype(Unsigned::digits)& rhs;
-	decltype(Unsigned::digits)& result;
-	const std::size_t lhsLength;
-	const std::size_t rhsLength;
+	const decltype(Unsigned::digits)& augend;
+	const decltype(Unsigned::digits)& addend;
+	decltype(Unsigned::digits)& sum;
+	const std::size_t augendLength;
+	const std::size_t addendLength;
 };
 
 Unsigned& Unsigned::operator+=(const Unsigned& other)

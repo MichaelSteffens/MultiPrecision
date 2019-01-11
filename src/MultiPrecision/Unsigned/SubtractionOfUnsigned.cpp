@@ -16,37 +16,37 @@ class Unsigned::SubtractionOfUnsigned
 {
 public:
 	SubtractionOfUnsigned(
-		const decltype(Unsigned::digits)& lhs,
-		const decltype(Unsigned::digits)& rhs,
-		decltype(Unsigned::digits)& result) :
-		lhs(lhs),
-		rhs(rhs),
-		result(result),
-		lhsLength(lhs.size()),
-		rhsLength(rhs.size())
+		const decltype(Unsigned::digits)& minuend,
+		const decltype(Unsigned::digits)& subtrahend,
+		decltype(Unsigned::digits)& difference) :
+		minuend(minuend),
+		subtrahend(subtrahend),
+		difference(difference),
+		minuendLength(minuend.size()),
+		subtrahendLength(subtrahend.size())
 	{
 	}
 
 	bool subtractDigitsAndTestNegative()
 	{
-		result.resize(std::max(lhsLength, rhsLength));
+		difference.resize(std::max(minuendLength, subtrahendLength));
 		DigitPairType borrow = 0;
 		std::size_t i = 0;
-		while (i < std::min(lhsLength, rhsLength)) {
-			DigitPairType tmp = lhs[i] - (rhs[i] + borrow);
-			result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
+		while (i < std::min(minuendLength, subtrahendLength)) {
+			DigitPairType tmp = minuend[i] - (subtrahend[i] + borrow);
+			difference[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
 			borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
 			++i;
 		}
-		while (i < lhsLength) {
-			DigitPairType tmp = lhs[i] - borrow;
-			result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
+		while (i < minuendLength) {
+			DigitPairType tmp = minuend[i] - borrow;
+			difference[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
 			borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
 			++i;
 		}
-		while (i < rhsLength) {
-			DigitPairType tmp = 0 - (rhs[i] + borrow);
-			result[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
+		while (i < subtrahendLength) {
+			DigitPairType tmp = 0 - (subtrahend[i] + borrow);
+			difference[i] = tmp & std::numeric_limits<Unsigned::DigitType>::max();
 			borrow = tmp >> std::numeric_limits<Unsigned::DigitType>::digits ? 1 : 0;
 			++i;
 		}
@@ -54,11 +54,11 @@ public:
 	}
 
 private:
-	const decltype(Unsigned::digits)& lhs;
-	const decltype(Unsigned::digits)& rhs;
-	decltype(Unsigned::digits)& result;
-	const std::size_t lhsLength;
-	const std::size_t rhsLength;
+	const decltype(Unsigned::digits)& minuend;
+	const decltype(Unsigned::digits)& subtrahend;
+	decltype(Unsigned::digits)& difference;
+	const std::size_t minuendLength;
+	const std::size_t subtrahendLength;
 };
 
 Unsigned& Unsigned::operator-=(const Unsigned& other)
