@@ -35,7 +35,11 @@ public:
 	Unsigned(const std::string& number);
 	Unsigned(std::string::const_iterator first, std::string::const_iterator last);
 	Unsigned& operator+=(const Unsigned& other);
+	Unsigned& operator++();
+	Unsigned operator++(int);
 	Unsigned& operator-=(const Unsigned& other);
+	Unsigned& operator--();
+	Unsigned operator--(int);
 	Unsigned& operator*=(const Unsigned& other);
 	DivisionResult dividedBy(const Unsigned& other) const;
 	Unsigned& operator/=(const Unsigned& other);

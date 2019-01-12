@@ -14,7 +14,7 @@ namespace MultiPrecision {
 class Unsigned::AdditionOfDigitType
 {
 public:
-	AdditionOfDigitType(const decltype(Unsigned::digits)& augend, DigitType& addend, decltype(Unsigned::digits)& sum) :
+	AdditionOfDigitType(const decltype(Unsigned::digits)& augend, DigitType addend, decltype(Unsigned::digits)& sum) :
 		augend(augend),
 		addend(addend),
 		sum(sum),
@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	void addDigits()
+	void addDigit()
 	{
 		sum.resize(std::max(augendLength + 1, std::size_t(1)));
 		DigitPairType carry = 0;
@@ -52,16 +52,31 @@ public:
 
 private:
 	const decltype(Unsigned::digits)& augend;
-	DigitType addend;
+	const DigitType addend;
 	decltype(Unsigned::digits)& sum;
 	const std::size_t augendLength;
 };
 
 Unsigned& Unsigned::operator+=(DigitType other)
 {
-	AdditionOfDigitType(digits, other, digits).addDigits();
+	AdditionOfDigitType(digits, other, digits).addDigit();
 	normalize();
 	return *this;
+}
+
+Unsigned& Unsigned::operator++()
+{
+	AdditionOfDigitType(digits, 1, digits).addDigit();
+	normalize();
+	return *this;
+}
+
+Unsigned Unsigned::operator++(int)
+{
+	Unsigned result(*this);
+	AdditionOfDigitType(digits, 1, digits).addDigit();
+	normalize();
+	return result;
 }
 
 } // namespace MultiPrecision

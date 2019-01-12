@@ -17,7 +17,7 @@ class Unsigned::SubtractionOfDigitType
 public:
 	SubtractionOfDigitType(
 		const decltype(Unsigned::digits)& minuend,
-		DigitType& subtrahend,
+		DigitType subtrahend,
 		decltype(Unsigned::digits)& difference) :
 		minuend(minuend),
 		subtrahend(subtrahend),
@@ -54,7 +54,7 @@ public:
 
 private:
 	const decltype(Unsigned::digits)& minuend;
-	DigitType subtrahend;
+	const DigitType subtrahend;
 	decltype(Unsigned::digits)& difference;
 	const std::size_t minuendLength;
 };
@@ -66,6 +66,25 @@ Unsigned& Unsigned::operator-=(DigitType other)
 	}
 	normalize();
 	return *this;
+}
+
+Unsigned& Unsigned::operator--()
+{
+	if (SubtractionOfDigitType(digits, 1, digits).subtractDigitAndTestNegative()) {
+		throw Underflow("Unsigned::operator--(): result is negative!");
+	}
+	normalize();
+	return *this;
+}
+
+Unsigned Unsigned::operator--(int)
+{
+	Unsigned result(*this);
+	if (SubtractionOfDigitType(digits, 1, digits).subtractDigitAndTestNegative()) {
+		throw Underflow("Unsigned::operator--(int): result is negative!");
+	}
+	normalize();
+	return result;
 }
 
 } // namespace MultiPrecision
