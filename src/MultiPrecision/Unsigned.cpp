@@ -50,29 +50,6 @@ Unsigned::Unsigned(unsigned long long n)
 	}
 }
 
-Unsigned::Unsigned(const char* number) : Unsigned(std::string(number))
-{
-}
-
-Unsigned::Unsigned(const std::string& number) : Unsigned(number.begin(), number.end())
-{
-}
-
-Unsigned::Unsigned(std::string::const_iterator first, std::string::const_iterator last)
-{
-	if (first != last) {
-		if (*first != '0') {
-			*this = fromDecimal(first, last);
-		} else if (++first != last) {
-			if (*first != 'x') {
-				*this = fromOctal(first, last);
-			} else if (++first != last) {
-				*this = fromHexadecimal(first, last);
-			}
-		}
-	}
-}
-
 bool Unsigned::equal(const Unsigned& other) const noexcept
 {
 	if (digits.size() != other.digits.size()) {
@@ -120,52 +97,98 @@ bool Unsigned::lessThanOrEqual(const Unsigned& other) const noexcept
 	return true;
 }
 
-Unsigned Unsigned::fromDecimal(std::string::const_iterator first, std::string::const_iterator last)
+std::istream& operator>>(std::istream& in, Unsigned& out)
 {
-	Unsigned result;
-	for (std::string::const_iterator i = first; i != last; ++i) {
-		if (*i >= '0' && *i <= '9') {
-			result *= 10;
-			result += *i - '0';
-		} else {
-			throw InvalidCharacter(
-				"Unsigned::fromDecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
-		}
+	std::ios_base::fmtflags formatFlags = in.flags();
+	if (formatFlags & std::ios::oct) {
+		Unsigned::readOctal(in, out);
+	} else if (formatFlags & std::ios::dec) {
+		Unsigned::readDecimal(in, out);
+	} else if (formatFlags & std::ios::hex) {
+		Unsigned::readHexadecimal(in, out);
+	} else {
+		Unsigned::read(in, out);
 	}
-	return result;
+	return in;
 }
 
-Unsigned Unsigned::fromHexadecimal(std::string::const_iterator first, std::string::const_iterator last)
+std::ostream& operator<<(std::ostream& out, const Unsigned& in)
 {
-	Unsigned result;
-	for (std::string::const_iterator i = first; i != last; ++i) {
-		if (*i >= '0' && *i <= '9') {
-			result <<= 4;
-			result += *i - '0';
-		} else if (*i >= 'a' && *i <= 'f') {
-			result <<= 4;
-			result += *i - 'a' + 10;
-		} else {
-			throw InvalidCharacter(
-				"Unsigned::fromHexadecimal(std::string::const_iterator, std::string::const_iterator): invalid character");
-		}
+	std::ios_base::fmtflags formatFlags = out.flags();
+	if (formatFlags & std::ios::oct) {
+		out << in.toOctalString();
+	} else if (formatFlags & std::ios::hex) {
+		out << in.toHexadecimalString(formatFlags & std::ios::uppercase);
+	} else {
+		out << in.toDecimalString();
 	}
-	return result;
+	return out;
 }
 
-Unsigned Unsigned::fromOctal(std::string::const_iterator first, std::string::const_iterator last)
+void Unsigned::read(std::istream& in, Unsigned& out)
 {
-	Unsigned result;
-	for (std::string::const_iterator i = first; i != last; ++i) {
-		if (*i >= '0' && *i <= '7') {
-			result <<= 3;
-			result += *i - '0';
-		} else {
-			throw InvalidCharacter(
-				"Unsigned::fromOctal(std::string::const_iterator, std::string::const_iterator): invalid character");
+	char c;
+	if (in.get(c)) {
+		if (c != '0') {
+			in.unget();
+			readDecimal(in, out);
+		} else if (in.get(c)) {
+			if (c != 'x') {
+				in.unget();
+				readOctal(in, out);
+			} else {
+				readHexadecimal(in, out);
+			}
 		}
 	}
-	return result;
+}
+
+void Unsigned::readDecimal(std::istream& in, Unsigned& out)
+{
+	out.digits.clear();
+	char c;
+	while (in.get(c)) {
+		if (c >= '0' && c <= '9') {
+			out *= 10;
+			out += c - '0';
+		} else {
+			in.unget();
+			break;
+		}
+	}
+}
+
+void Unsigned::readHexadecimal(std::istream& in, Unsigned& out)
+{
+	out.digits.clear();
+	char c;
+	while (in.get(c)) {
+		if (c >= '0' && c <= '9') {
+			out <<= 4;
+			out += c - '0';
+		} else if (c >= 'a' && c <= 'f') {
+			out <<= 4;
+			out += c - 'a' + 10;
+		} else {
+			in.unget();
+			break;
+		}
+	}
+}
+
+void Unsigned::readOctal(std::istream& in, Unsigned& out)
+{
+	out.digits.clear();
+	char c;
+	while (in.get(c)) {
+		if (c >= '0' && c <= '7') {
+			out <<= 3;
+			out += c - '0';
+		} else {
+			in.unget();
+			break;
+		}
+	}
 }
 
 std::string Unsigned::toDecimalString() const
@@ -180,16 +203,17 @@ std::string Unsigned::toDecimalString() const
 	return std::string(buffer.rbegin(), buffer.rend());
 }
 
-std::string Unsigned::toHexadecimalString() const
+std::string Unsigned::toHexadecimalString(bool uppercase) const
 {
 	std::vector<char> buffer;
+	const char a = uppercase ? 'A' : 'a';
 	DigitType remainder = digits.empty() ? 0 : digits.front() & 0xf;
 	Unsigned quotient = *this >> 4;
-	buffer.push_back(remainder < 10 ? '0' + remainder : 'a' + remainder - 10);
+	buffer.push_back(remainder < 10 ? '0' + remainder : a + remainder - 10);
 	while (!quotient.digits.empty()) {
 		remainder = quotient.digits.empty() ? 0 : quotient.digits.front() & 0xf;
 		quotient >>= 4;
-		buffer.push_back(remainder < 10 ? '0' + remainder : 'a' + remainder - 10);
+		buffer.push_back(remainder < 10 ? '0' + remainder : a + remainder - 10);
 	}
 	return std::string(buffer.rbegin(), buffer.rend());
 }

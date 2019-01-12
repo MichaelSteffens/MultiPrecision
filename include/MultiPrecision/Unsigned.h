@@ -8,6 +8,8 @@
 #ifndef MultiPrecision_Unsigned_INCLUDED
 #define MultiPrecision_Unsigned_INCLUDED
 
+#include <istream>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -43,11 +45,15 @@ public:
 	Unsigned& operator%=(const Unsigned& other);
 	Unsigned& operator<<=(std::size_t bits);
 	Unsigned& operator>>=(std::size_t bits);
+	static void read(std::istream& in, Unsigned& out);
+	static void readDecimal(std::istream& in, Unsigned& out);
+	static void readHexadecimal(std::istream& in, Unsigned& out);
+	static void readOctal(std::istream& in, Unsigned& out);
 	static Unsigned fromDecimal(std::string::const_iterator first, std::string::const_iterator last);
 	static Unsigned fromHexadecimal(std::string::const_iterator first, std::string::const_iterator last);
 	static Unsigned fromOctal(std::string::const_iterator first, std::string::const_iterator last);
 	std::string toDecimalString() const;
-	std::string toHexadecimalString() const;
+	std::string toHexadecimalString(bool uppercase = false) const;
 	std::string toOctalString() const;
 	bool isZero() const noexcept;
 
@@ -62,6 +68,7 @@ private:
 	class DivisionByDigitType;
 	class ShiftToLeft;
 	class ShiftToRight;
+	class StringReadBuffer;
 
 	Unsigned& operator+=(DigitType other);
 	Unsigned& operator-=(DigitType other);
@@ -87,6 +94,8 @@ private:
 	friend Unsigned operator%(const Unsigned& lhs, const Unsigned& rhs);
 	friend Unsigned operator<<(const Unsigned& n, std::size_t bits);
 	friend Unsigned operator>>(const Unsigned& n, std::size_t bits);
+	friend std::istream& operator>>(std::istream& in, Unsigned& out);
+	friend std::ostream& operator<<(std::ostream& out, const Unsigned& in);
 
 	std::vector<DigitType> digits;
 };
