@@ -19,7 +19,8 @@ public:
 	DivisionByUnsigned(const Unsigned& dividend, const Unsigned& divisor) :
 		remainder(dividend),
 		divisor(divisor),
-		divisorLength(divisor.digits.size())
+		divisorLength(divisor.digits.size()),
+		expansionShift(0)
 	{
 	}
 
@@ -63,7 +64,6 @@ private:
 	// significant digit is >= RADIX / 2.
 	void expandFraction()
 	{
-		expansionShift = 0;
 		for (DigitType mask = 1 << (std::numeric_limits<DigitType>::digits - 1); !(divisor.digits.back() & mask); mask >>= 1) {
 			++expansionShift;
 		}
