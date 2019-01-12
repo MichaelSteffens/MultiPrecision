@@ -34,9 +34,6 @@ public:
 	Unsigned(const char* number);
 	Unsigned(const std::string& number);
 	Unsigned(std::string::const_iterator first, std::string::const_iterator last);
-	bool equal(const Unsigned& other) const noexcept;
-	bool lessThan(const Unsigned& other) const noexcept;
-	bool lessThanOrEqual(const Unsigned& other) const noexcept;
 	Unsigned& operator+=(const Unsigned& other);
 	Unsigned& operator-=(const Unsigned& other);
 	Unsigned& operator*=(const Unsigned& other);
@@ -68,6 +65,9 @@ private:
 	class DivisionByDigitType;
 	class LeftShift;
 	class RightShift;
+	class EqualComparison;
+	class LessThanComparison;
+	class LessThanOrEqualComparison;
 	class StringReadBuffer;
 
 	Unsigned& operator+=(DigitType other);

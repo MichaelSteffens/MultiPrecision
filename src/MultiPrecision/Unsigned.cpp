@@ -50,53 +50,6 @@ Unsigned::Unsigned(unsigned long long n)
 	}
 }
 
-bool Unsigned::equal(const Unsigned& other) const noexcept
-{
-	if (digits.size() != other.digits.size()) {
-		return false;
-	}
-	for (std::size_t i = digits.size(); i > 0; --i) {
-		if (digits[i - 1] != other.digits[i - 1]) {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool Unsigned::lessThan(const Unsigned& other) const noexcept
-{
-	if (digits.size() < other.digits.size()) {
-		return true;
-	} else if (digits.size() > other.digits.size()) {
-		return false;
-	}
-	for (std::size_t i = digits.size(); i > 0; --i) {
-		if (digits[i - 1] < other.digits[i - 1]) {
-			return true;
-		} else if (digits[i - 1] > other.digits[i - 1]) {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Unsigned::lessThanOrEqual(const Unsigned& other) const noexcept
-{
-	if (digits.size() < other.digits.size()) {
-		return true;
-	} else if (digits.size() > other.digits.size()) {
-		return false;
-	}
-	for (std::size_t i = digits.size(); i > 0; --i) {
-		if (digits[i - 1] < other.digits[i - 1]) {
-			return true;
-		} else if (digits[i - 1] > other.digits[i - 1]) {
-			return false;
-		}
-	}
-	return true;
-}
-
 std::istream& operator>>(std::istream& in, Unsigned& out)
 {
 	std::ios_base::fmtflags formatFlags = in.flags();
@@ -242,36 +195,6 @@ void Unsigned::normalize()
 	while (!digits.empty() && !digits.back()) {
 		digits.pop_back();
 	}
-}
-
-bool operator==(const Unsigned& lhs, const Unsigned& rhs) noexcept
-{
-	return lhs.equal(rhs);
-}
-
-bool operator!=(const Unsigned& lhs, const Unsigned& rhs) noexcept
-{
-	return !lhs.equal(rhs);
-}
-
-bool operator<(const Unsigned& lhs, const Unsigned& rhs) noexcept
-{
-	return lhs.lessThan(rhs);
-}
-
-bool operator<=(const Unsigned& lhs, const Unsigned& rhs) noexcept
-{
-	return lhs.lessThanOrEqual(rhs);
-}
-
-bool operator>(const Unsigned& lhs, const Unsigned& rhs) noexcept
-{
-	return !lhs.lessThanOrEqual(rhs);
-}
-
-bool operator>=(const Unsigned& lhs, const Unsigned& rhs) noexcept
-{
-	return !lhs.lessThan(rhs);
 }
 
 } // namespace MultiPrecision
