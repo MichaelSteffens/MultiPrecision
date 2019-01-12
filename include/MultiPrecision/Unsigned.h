@@ -66,8 +66,8 @@ private:
 	class MultiplicationWithDigitType;
 	class DivisionByUnsigned;
 	class DivisionByDigitType;
-	class ShiftToLeft;
-	class ShiftToRight;
+	class LeftShift;
+	class RightShift;
 	class StringReadBuffer;
 
 	Unsigned& operator+=(DigitType other);

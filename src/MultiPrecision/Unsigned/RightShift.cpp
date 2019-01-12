@@ -11,10 +11,10 @@
 
 namespace MultiPrecision {
 
-class Unsigned::ShiftToRight
+class Unsigned::RightShift
 {
 public:
-	ShiftToRight(const decltype(Unsigned::digits)& digits, decltype(Unsigned::digits)& result, std::size_t bits) :
+	RightShift(const decltype(Unsigned::digits)& digits, decltype(Unsigned::digits)& result, std::size_t bits) :
 		digits(digits),
 		result(result),
 		digitShift(bits / std::numeric_limits<DigitType>::digits),
@@ -60,7 +60,7 @@ private:
 
 Unsigned& Unsigned::operator>>=(std::size_t bits)
 {
-	ShiftToRight(digits, digits, bits).shiftBitsInDigits<true>();
+	RightShift(digits, digits, bits).shiftBitsInDigits<true>();
 	normalize();
 	return *this;
 }
@@ -68,7 +68,7 @@ Unsigned& Unsigned::operator>>=(std::size_t bits)
 Unsigned operator>>(const Unsigned& n, std::size_t bits)
 {
 	Unsigned result;
-	Unsigned::ShiftToRight(n.digits, result.digits, bits).shiftBitsInDigits<false>();
+	Unsigned::RightShift(n.digits, result.digits, bits).shiftBitsInDigits<false>();
 	result.normalize();
 	return result;
 }
