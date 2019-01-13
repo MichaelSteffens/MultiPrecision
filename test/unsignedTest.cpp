@@ -46,6 +46,21 @@ TEST_CASE("Unsigned addition in place", "[unsigned]")
 	}
 }
 
+TEST_CASE("Unsigned increment", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabeffffffffffffffff");
+	SECTION("Pre-increment")
+	{
+		REQUIRE(++testee == "0xfeedbabefeedbabf0000000000000000");
+		REQUIRE(testee == "0xfeedbabefeedbabf0000000000000000");
+	}
+	SECTION("Post-increment")
+	{
+		REQUIRE(testee++ == "0xfeedbabefeedbabeffffffffffffffff");
+		REQUIRE(testee == "0xfeedbabefeedbabf0000000000000000");
+	}
+}
+
 TEST_CASE("Unsigned subtraction", "[unsigned]")
 {
 	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
@@ -82,6 +97,30 @@ TEST_CASE("Unsigned subtraction in place", "[unsigned]")
 	{
 		testee -= "0xbabefeedbabefeedbabefeedbabefeed";
 		REQUIRE(testee == "0x442ebbd1442ebbd1442ebbd1442ebbd1");
+	}
+}
+
+TEST_CASE("Unsigned decrement", "[unsigned]")
+{
+	MultiPrecision::Unsigned zero("0x0");
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabe0000000000000000");
+	SECTION("Pre-decrement zero")
+	{
+		REQUIRE_THROWS(--zero);
+	}
+	SECTION("Pre-decrement")
+	{
+		REQUIRE(--testee == "0xfeedbabefeedbabdffffffffffffffff");
+		REQUIRE(testee == "0xfeedbabefeedbabdffffffffffffffff");
+	}
+	SECTION("Post-decrement zero")
+	{
+		REQUIRE_THROWS(zero--);
+	}
+	SECTION("Post-decrement")
+	{
+		REQUIRE(testee-- == "0xfeedbabefeedbabe0000000000000000");
+		REQUIRE(testee == "0xfeedbabefeedbabdffffffffffffffff");
 	}
 }
 
