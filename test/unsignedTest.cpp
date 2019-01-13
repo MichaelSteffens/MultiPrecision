@@ -638,3 +638,13 @@ TEST_CASE("Operator >=", "[unsigned]")
 		REQUIRE("0xfeedbabf" >= testee);
 	}
 }
+
+TEST_CASE("Bit range", "[unsigned]")
+{
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabe");
+	std::ostringstream out;
+	for (auto i : testee.bitRange()) {
+		out << i;
+	}
+	REQUIRE(out.str() == "0111110101011101101101110111111101111101010111011011011101111111");
+}

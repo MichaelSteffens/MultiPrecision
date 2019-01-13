@@ -22,6 +22,7 @@ public:
 	static_assert(std::is_integral<DigitType>::value);
 	static_assert(std::is_unsigned<DigitType>::value);
 
+	class BitRange;
 	struct DivisionResult;
 
 	Unsigned();
@@ -57,6 +58,7 @@ public:
 	std::string toHexadecimalString(bool uppercase = false) const;
 	std::string toOctalString() const;
 	bool isZero() const noexcept;
+	BitRange bitRange() const noexcept;
 
 private:
 	class AdditionOfUnsigned;
@@ -110,6 +112,33 @@ struct Unsigned::DivisionResult
 	Unsigned remainder;
 };
 
+class Unsigned::BitRange
+{
+public:
+	class ConstIterator;
+	typedef ConstIterator const_iterator;
+
+	explicit BitRange(const decltype(Unsigned::digits)& digits);
+	ConstIterator begin() const;
+	ConstIterator end() const;
+
+private:
+	const decltype(Unsigned::digits)& digits;
+};
+
+class Unsigned::BitRange::ConstIterator
+{
+public:
+	ConstIterator(const decltype(Unsigned::digits)& digits, std::size_t i, DigitType mask);
+	ConstIterator& operator++();
+	bool operator*() const noexcept;
+	friend bool operator!=(const ConstIterator& lhs, const ConstIterator& rhs) noexcept;
+
+private:
+	const decltype(Unsigned::digits)& digits;
+	std::size_t i;
+	DigitType mask;
+};
 
 } // namespace MultiPrecision
 

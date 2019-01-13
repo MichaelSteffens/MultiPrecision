@@ -10,6 +10,7 @@
 #include "MultiPrecision/InvalidCharacter.h"
 #include <iostream>
 #include <limits>
+#include <sstream>
 
 namespace MultiPrecision {
 
@@ -188,6 +189,11 @@ std::string Unsigned::toOctalString() const
 bool Unsigned::isZero() const noexcept
 {
 	return digits.empty();
+}
+
+Unsigned::BitRange Unsigned::bitRange() const noexcept
+{
+	return BitRange(digits);
 }
 
 void Unsigned::normalize()
