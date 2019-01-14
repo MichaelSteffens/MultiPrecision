@@ -147,7 +147,7 @@ Unsigned::DivisionResult Unsigned::dividedBy(const Unsigned& other) const
 
 Unsigned& Unsigned::operator/=(const Unsigned& other)
 {
-	if (other.digits.empty()) {
+	if (other.isZero()) {
 		throw DivisionByZero("Unsigned::operator/=(const Unsigned&): divisor is zero!");
 	} else {
 		if (other.digits.size() == 1) {
@@ -161,7 +161,7 @@ Unsigned& Unsigned::operator/=(const Unsigned& other)
 
 Unsigned& Unsigned::operator%=(const Unsigned& other)
 {
-	if (other.digits.empty()) {
+	if (other.isZero()) {
 		throw DivisionByZero("Unsigned::operator%=(const Unsigned&): divisor is zero!");
 	} else {
 		if (other.digits.size() == 1) {
@@ -170,6 +170,24 @@ Unsigned& Unsigned::operator%=(const Unsigned& other)
 			*this = DivisionByUnsigned(*this, other).getRemainder();
 		}
 		return *this;
+	}
+}
+
+Unsigned operator/(const Unsigned& lhs, const Unsigned& rhs)
+{
+	if (rhs.isZero()) {
+		throw DivisionByZero("operator/(const Unsigned&, const Unsigned&): divisor is zero!");
+	} else {
+		return Unsigned::DivisionByUnsigned(lhs, rhs).getQuotient();
+	}
+}
+
+Unsigned operator%(const Unsigned& lhs, const Unsigned& rhs)
+{
+	if (rhs.isZero()) {
+		throw DivisionByZero("operator%(const Unsigned&, const Unsigned&): divisor is zero!");
+	} else {
+		return Unsigned::DivisionByUnsigned(lhs, rhs).getRemainder();
 	}
 }
 

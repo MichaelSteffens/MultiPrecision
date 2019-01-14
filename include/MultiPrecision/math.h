@@ -14,6 +14,8 @@ namespace MultiPrecision {
 
 Unsigned pow(const Unsigned& base, const Unsigned& exponent);
 
+Unsigned pow(const Unsigned& base, const Unsigned& exponent, const Unsigned& modulus);
+
 } // namespace MultiPrecision
 
 #endif // MultiPrecision_math_INCLUDED

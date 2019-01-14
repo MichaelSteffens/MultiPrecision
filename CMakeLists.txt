@@ -52,3 +52,6 @@ add_subdirectory(test EXCLUDE_FROM_ALL)
 
 add_test(NAME UnsignedTest COMMAND unsignedTest)
 add_dependencies(check unsignedTest)
+
+add_test(NAME MathTest COMMAND mathTest)
+add_dependencies(check mathTest)
