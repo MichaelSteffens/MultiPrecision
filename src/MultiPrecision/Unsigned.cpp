@@ -193,7 +193,12 @@ bool Unsigned::isZero() const noexcept
 
 Unsigned::BitRange Unsigned::bitRange() const noexcept
 {
-	return BitRange(digits);
+	return BitRange(*this);
+}
+
+Unsigned::FullBitRange Unsigned::fullBitRange() const noexcept
+{
+	return FullBitRange(*this);
 }
 
 std::size_t Unsigned::mostSignificantBitPosition() const noexcept

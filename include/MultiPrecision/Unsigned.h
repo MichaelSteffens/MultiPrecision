@@ -23,6 +23,8 @@ public:
 	static_assert(std::is_unsigned<DigitType>::value);
 
 	class BitRange;
+	class FullBitRange;
+	class ConstBitIterator;
 	struct DivisionResult;
 
 	Unsigned();
@@ -59,6 +61,7 @@ public:
 	std::string toOctalString() const;
 	bool isZero() const noexcept;
 	BitRange bitRange() const noexcept;
+	FullBitRange fullBitRange() const noexcept;
 	std::size_t mostSignificantBitPosition() const noexcept;
 
 private:
@@ -117,24 +120,36 @@ struct Unsigned::DivisionResult
 class Unsigned::BitRange
 {
 public:
-	class ConstIterator;
-	typedef ConstIterator const_iterator;
+	typedef ConstBitIterator const_iterator;
 
-	explicit BitRange(const decltype(Unsigned::digits)& digits);
-	ConstIterator begin() const;
-	ConstIterator end() const;
+	explicit BitRange(const Unsigned& number);
+	ConstBitIterator begin() const;
+	ConstBitIterator end() const;
 
 private:
-	const decltype(Unsigned::digits)& digits;
+	const Unsigned& number;
 };
 
-class Unsigned::BitRange::ConstIterator
+class Unsigned::FullBitRange
 {
 public:
-	ConstIterator(const decltype(Unsigned::digits)& digits, std::size_t i, DigitType mask);
-	ConstIterator& operator++();
+	typedef ConstBitIterator const_iterator;
+
+	explicit FullBitRange(const Unsigned& number);
+	ConstBitIterator begin() const;
+	ConstBitIterator end() const;
+
+private:
+	const Unsigned& number;
+};
+
+class Unsigned::ConstBitIterator
+{
+public:
+	ConstBitIterator(const decltype(Unsigned::digits)& digits, std::size_t i, DigitType mask);
+	ConstBitIterator& operator++();
 	bool operator*() const noexcept;
-	friend bool operator!=(const ConstIterator& lhs, const ConstIterator& rhs) noexcept;
+	friend bool operator!=(const ConstBitIterator& lhs, const ConstBitIterator& rhs) noexcept;
 
 private:
 	const decltype(Unsigned::digits)& digits;

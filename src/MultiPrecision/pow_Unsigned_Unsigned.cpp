@@ -6,7 +6,6 @@
 
 
 #include "MultiPrecision/math.h"
-#include <iostream>
 
 namespace MultiPrecision {
 
@@ -15,7 +14,6 @@ Unsigned pow(const Unsigned& base, const Unsigned& exponent)
 	Unsigned power(1);
 	Unsigned multiplier(base);
 	for (auto i : exponent.bitRange()) {
-		std::cerr << "pow(const Unsigned&, const Unsigned&): i=" << i << std::endl;
 		if (i) {
 			power *= multiplier;
 		}
