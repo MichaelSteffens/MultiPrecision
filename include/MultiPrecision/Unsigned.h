@@ -59,6 +59,7 @@ public:
 	std::string toOctalString() const;
 	bool isZero() const noexcept;
 	BitRange bitRange() const noexcept;
+	std::size_t mostSignificantBitPosition() const noexcept;
 
 private:
 	class AdditionOfUnsigned;
@@ -85,6 +86,7 @@ private:
 	Unsigned& operator%=(DigitType divisor);
 
 	bool subtractAndTestNegative(const Unsigned& other);
+	std::size_t mostSignificantDigitPosition() const noexcept;
 	void normalize();
 
 	friend bool operator==(const Unsigned& lhs, const Unsigned& rhs) noexcept;

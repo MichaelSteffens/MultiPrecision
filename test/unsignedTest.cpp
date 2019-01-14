@@ -648,3 +648,15 @@ TEST_CASE("Bit range", "[unsigned]")
 	}
 	REQUIRE(out.str() == "0111110101011101101101110111111101111101010111011011011101111111");
 }
+
+TEST_CASE("Most significant bit position", "[unsigned]")
+{
+	SECTION("Zero")
+	{
+		REQUIRE(MultiPrecision::Unsigned("0x0").mostSignificantBitPosition() == 0);
+	}
+	SECTION("Large number")
+	{
+		REQUIRE(MultiPrecision::Unsigned("0x7d5db77f7d5db77f").mostSignificantBitPosition() == 63);
+	}
+}

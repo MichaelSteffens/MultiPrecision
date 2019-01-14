@@ -196,11 +196,35 @@ Unsigned::BitRange Unsigned::bitRange() const noexcept
 	return BitRange(digits);
 }
 
+std::size_t Unsigned::mostSignificantBitPosition() const noexcept
+{
+	std::size_t digitPosition = mostSignificantDigitPosition();
+	std::size_t bitPosition = digitPosition * std::numeric_limits<DigitType>::digits;
+	if (digitPosition) {
+		auto mask = DigitType(1) << (std::numeric_limits<DigitType>::digits - 1);
+		for (auto mask = DigitType(1) << (std::numeric_limits<DigitType>::digits - 1);
+			 mask && (digits[digitPosition - 1] & mask) == 0;
+			 mask >>= 1) {
+			--bitPosition;
+		}
+	}
+	return bitPosition;
+}
+
 void Unsigned::normalize()
 {
 	while (!digits.empty() && !digits.back()) {
 		digits.pop_back();
 	}
+}
+
+std::size_t Unsigned::mostSignificantDigitPosition() const noexcept
+{
+	std::size_t digitPosition = digits.size();
+	for (auto i = digits.rbegin(); i != digits.rend() && *i == 0; ++i) {
+		--digitPosition;
+	}
+	return digitPosition;
 }
 
 } // namespace MultiPrecision
