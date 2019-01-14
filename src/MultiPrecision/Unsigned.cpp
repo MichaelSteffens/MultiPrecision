@@ -201,7 +201,6 @@ std::size_t Unsigned::mostSignificantBitPosition() const noexcept
 	std::size_t digitPosition = mostSignificantDigitPosition();
 	std::size_t bitPosition = digitPosition * std::numeric_limits<DigitType>::digits;
 	if (digitPosition) {
-		auto mask = DigitType(1) << (std::numeric_limits<DigitType>::digits - 1);
 		for (auto mask = DigitType(1) << (std::numeric_limits<DigitType>::digits - 1);
 			 mask && (digits[digitPosition - 1] & mask) == 0;
 			 mask >>= 1) {

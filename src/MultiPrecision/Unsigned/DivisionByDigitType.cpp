@@ -16,8 +16,11 @@ namespace MultiPrecision {
 class Unsigned::DivisionByDigitType
 {
 public:
-	DivisionByDigitType(const Unsigned& dividend, DigitType divisor) : remainder(dividend), divisor(divisor)
+	DivisionByDigitType(const Unsigned& dividend, DigitType divisor) : divisor(divisor)
 	{
+		// Sufficient space including an extra digit appended in calculateQuotientDigit() below.
+		remainder.digits.reserve(dividend.digits.size() + 1);
+		remainder.digits.assign(dividend.digits.begin(), dividend.digits.end());
 	}
 
 	Unsigned::DivisionResult getQuotientAndRemainder()
@@ -74,8 +77,8 @@ private:
 		remainder.digits.insert(remainder.digits.end(), remainderFragment.digits.begin(), remainderFragment.digits.end());
 	}
 
-	Unsigned remainder;
 	DigitType divisor;
+	Unsigned remainder;
 	Unsigned quotient;
 	Unsigned remainderFragment;
 };

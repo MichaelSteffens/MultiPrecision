@@ -16,21 +16,25 @@ namespace MultiPrecision {
 class Unsigned::DivisionByUnsigned
 {
 public:
+	// Expand remainder (initialized by dividend) and divisor by a common factor power of 2, ensuring that the divisor most
+	// significant digit is >= RADIX / 2.
 	DivisionByUnsigned(const Unsigned& dividend, const Unsigned& divisor) :
-		remainder(dividend),
-		divisor(divisor),
 		divisorLength(divisor.digits.size()),
-		expansionShift(0)
+		expansionShift(divisorLength * std::numeric_limits<DigitType>::digits - divisor.mostSignificantBitPosition()),
+		divisor(divisor << expansionShift)
 	{
+		// Sufficient space for expansion shift result, including an extra digit appended in calculateQuotientDigit() below.
+		remainder.digits.reserve(dividend.digits.size() + expansionShift / std::numeric_limits<DigitType>::digits + 2);
+		remainder.digits.assign(dividend.digits.begin(), dividend.digits.end());
+		remainder <<= expansionShift;
 	}
 
 	Unsigned::DivisionResult getQuotientAndRemainder()
 	{
 		if (remainder >= divisor) {
-			expandFraction();
 			loopOverQuotientDigits();
-			reduceRemainder();
 		}
+		reduceRemainder();
 		quotient.normalize();
 		remainder.normalize();
 		return Unsigned::DivisionResult({std::move(quotient), std::move(remainder)});
@@ -39,7 +43,6 @@ public:
 	Unsigned getQuotient()
 	{
 		if (remainder >= divisor) {
-			expandFraction();
 			loopOverQuotientDigits();
 		}
 		quotient.normalize();
@@ -49,27 +52,15 @@ public:
 	Unsigned getRemainder()
 	{
 		if (remainder >= divisor) {
-			expandFraction();
 			loopOverQuotientDigits();
-			reduceRemainder();
 		}
+		reduceRemainder();
 		remainder.normalize();
 		return std::move(remainder);
 	}
 
 private:
 	static constexpr DigitPairType RADIX = static_cast<DigitPairType>(1) << std::numeric_limits<DigitType>::digits;
-
-	// Expand remainder (initialized by dividend) and divisor by a common factor power of 2, ensuring that the divisor most
-	// significant digit is >= RADIX / 2.
-	void expandFraction()
-	{
-		for (DigitType mask = 1 << (std::numeric_limits<DigitType>::digits - 1); !(divisor.digits.back() & mask); mask >>= 1) {
-			++expansionShift;
-		}
-		remainder <<= expansionShift;
-		divisor <<= expansionShift;
-	}
 
 	void loopOverQuotientDigits()
 	{
@@ -129,11 +120,11 @@ private:
 		remainder >>= expansionShift;
 	}
 
-	Unsigned remainder;
-	Unsigned divisor;
-	Unsigned quotient;
 	std::size_t divisorLength;
 	std::size_t expansionShift;
+	Unsigned divisor;
+	Unsigned remainder;
+	Unsigned quotient;
 	DigitPairType trialQuotient;
 	DigitPairType trialRemainder;
 	Unsigned remainderFragment;
