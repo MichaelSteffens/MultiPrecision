@@ -180,7 +180,7 @@ TEST_CASE("Unsigned division by divisor larger than dividend", "[unsigned]")
 	MultiPrecision::Unsigned dividend("0x2");
 	SECTION("Unsigned divisor")
 	{
-		auto result = dividend.dividedBy(MultiPrecision::Unsigned("0x10000000000000001"));
+		auto result = dividend.dividedBy(MultiPrecision::Unsigned("0x100000000000000000000000000000001"));
 		REQUIRE(result.quotient == "0x0");
 		REQUIRE(result.remainder == "0x2");
 	}

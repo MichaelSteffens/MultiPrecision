@@ -24,15 +24,17 @@ public:
 
 	Unsigned getProduct()
 	{
-		product.digits.assign(multiplicandLength + 1, 0);
+		product.digits.reserve(multiplicandLength + 1);
+		product.digits.resize(multiplicandLength);
 		DigitPairType carry = 0;
 		for (std::size_t i = 0; i < multiplicandLength; ++i) {
 			DigitPairType tmp = DigitPairType(multiplicand.digits[i]) * multiplier + product.digits[i] + carry;
 			product.digits[i] = tmp & std::numeric_limits<DigitType>::max();
 			carry = tmp >> std::numeric_limits<DigitType>::digits;
 		}
-		product.digits[multiplicandLength] = carry;
-		product.normalize();
+		if (carry) {
+			product.digits.push_back(carry);
+		}
 		return std::move(product);
 	}
 

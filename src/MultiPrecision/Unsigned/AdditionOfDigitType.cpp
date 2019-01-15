@@ -18,13 +18,15 @@ public:
 		augend(augend),
 		addend(addend),
 		sum(sum),
-		augendLength(augend.size())
+		augendLength(augend.size()),
+		maxLength(std::max(augendLength, std::size_t(1)))
 	{
 	}
 
 	void addDigit()
 	{
-		sum.resize(std::max(augendLength + 1, std::size_t(1)));
+		sum.reserve(maxLength + 1);
+		sum.resize(maxLength);
 		DigitPairType carry = 0;
 		std::size_t i = 0;
 		while (i < std::min(augendLength, std::size_t(1))) {
@@ -55,19 +57,18 @@ private:
 	const DigitType addend;
 	decltype(Unsigned::digits)& sum;
 	const std::size_t augendLength;
+	const std::size_t maxLength;
 };
 
 Unsigned& Unsigned::operator+=(DigitType other)
 {
 	AdditionOfDigitType(digits, other, digits).addDigit();
-	normalize();
 	return *this;
 }
 
 Unsigned& Unsigned::operator++()
 {
 	AdditionOfDigitType(digits, 1, digits).addDigit();
-	normalize();
 	return *this;
 }
 
@@ -75,7 +76,6 @@ Unsigned Unsigned::operator++(int)
 {
 	Unsigned result(*this);
 	AdditionOfDigitType(digits, 1, digits).addDigit();
-	normalize();
 	return result;
 }
 

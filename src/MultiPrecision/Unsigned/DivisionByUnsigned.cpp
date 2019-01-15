@@ -31,31 +31,31 @@ public:
 
 	Unsigned::DivisionResult getQuotientAndRemainder()
 	{
-		if (remainder >= divisor) {
+		if (remainder.digits.size() >= divisorLength) {
 			loopOverQuotientDigits();
 		}
+		quotient.trimMostSignificantDigit();
 		reduceRemainder();
-		quotient.normalize();
-		remainder.normalize();
+		remainder.digits.resize(divisorLength);
 		return Unsigned::DivisionResult({std::move(quotient), std::move(remainder)});
 	}
 
 	Unsigned getQuotient()
 	{
-		if (remainder >= divisor) {
+		if (remainder.digits.size() >= divisorLength) {
 			loopOverQuotientDigits();
 		}
-		quotient.normalize();
+		quotient.trimMostSignificantDigit();
 		return std::move(quotient);
 	}
 
 	Unsigned getRemainder()
 	{
-		if (remainder >= divisor) {
+		if (remainder.digits.size() >= divisorLength) {
 			loopOverQuotientDigits();
 		}
 		reduceRemainder();
-		remainder.normalize();
+		remainder.digits.resize(divisorLength);
 		return std::move(remainder);
 	}
 
@@ -65,7 +65,7 @@ private:
 	void loopOverQuotientDigits()
 	{
 		std::size_t quotientLength = remainder.digits.size() - divisorLength + 1;
-		quotient.digits.assign(quotientLength, 0); // Reserve quotient result space, to be populated in reverse order below.
+		quotient.digits.resize(quotientLength);
 		for (std::size_t i = quotientLength; i--;) {
 			calculateQuotientDigit(i);
 			multiplyAndSubtract(i);

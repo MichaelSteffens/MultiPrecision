@@ -66,7 +66,6 @@ Unsigned& Unsigned::operator-=(const Unsigned& other)
 	if (SubtractionOfUnsigned(digits, other.digits, digits).subtractDigitsAndTestNegative()) {
 		throw Underflow("Unsigned::operator-=(const Unsigned&): result is negative!");
 	}
-	normalize();
 	return *this;
 }
 
@@ -76,7 +75,6 @@ Unsigned operator-(const Unsigned& lhs, const Unsigned& rhs)
 	if (Unsigned::SubtractionOfUnsigned(lhs.digits, rhs.digits, result.digits).subtractDigitsAndTestNegative()) {
 		throw Underflow("operator+(const Unsigned&, const Unsigned& rhs): : result is negative!");
 	}
-	result.normalize();
 	return result;
 }
 

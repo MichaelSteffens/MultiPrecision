@@ -64,7 +64,6 @@ Unsigned& Unsigned::operator-=(DigitType other)
 	if (SubtractionOfDigitType(digits, other, digits).subtractDigitAndTestNegative()) {
 		throw Underflow("Unsigned::operator-=(DigitType): result is negative!");
 	}
-	normalize();
 	return *this;
 }
 
@@ -73,7 +72,6 @@ Unsigned& Unsigned::operator--()
 	if (SubtractionOfDigitType(digits, 1, digits).subtractDigitAndTestNegative()) {
 		throw Underflow("Unsigned::operator--(): result is negative!");
 	}
-	normalize();
 	return *this;
 }
 
@@ -83,7 +81,6 @@ Unsigned Unsigned::operator--(int)
 	if (SubtractionOfDigitType(digits, 1, digits).subtractDigitAndTestNegative()) {
 		throw Underflow("Unsigned::operator--(int): result is negative!");
 	}
-	normalize();
 	return result;
 }
 

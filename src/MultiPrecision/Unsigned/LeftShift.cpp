@@ -34,6 +34,9 @@ public:
 			for (std::size_t i = 0; i < digitShift; ++i) {
 				result[i] = 0;
 			}
+			if (!result.back()) {
+				result.pop_back();
+			}
 		} else {
 			result.clear();
 		}
@@ -59,7 +62,6 @@ private:
 Unsigned& Unsigned::operator<<=(std::size_t bits)
 {
 	LeftShift(digits, digits, bits).shiftBitsInDigits();
-	normalize();
 	return *this;
 }
 
@@ -67,7 +69,6 @@ Unsigned operator<<(const Unsigned& n, std::size_t bits)
 {
 	Unsigned result;
 	Unsigned::LeftShift(n.digits, result.digits, bits).shiftBitsInDigits();
-	result.normalize();
 	return result;
 }
 

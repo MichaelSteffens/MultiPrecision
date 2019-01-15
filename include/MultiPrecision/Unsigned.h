@@ -65,6 +65,7 @@ public:
 	std::size_t mostSignificantBitPosition() const noexcept;
 	std::size_t numberOfDigits() const noexcept;
 	Unsigned& resize(std::size_t numberOfDigits);
+	Unsigned& trim();
 
 private:
 	class AdditionOfUnsigned;
@@ -92,7 +93,7 @@ private:
 
 	bool subtractAndTestNegative(const Unsigned& other);
 	std::size_t mostSignificantDigitPosition() const noexcept;
-	void normalize();
+	void trimMostSignificantDigit();
 
 	friend bool operator==(const Unsigned& lhs, const Unsigned& rhs) noexcept;
 	friend bool operator!=(const Unsigned& lhs, const Unsigned& rhs) noexcept;

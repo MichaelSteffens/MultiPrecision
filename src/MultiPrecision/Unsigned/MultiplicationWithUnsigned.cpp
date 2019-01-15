@@ -25,7 +25,7 @@ public:
 
 	Unsigned getProduct()
 	{
-		product.digits.assign(multiplicandLength + multiplierLength, 0);
+		product.digits.resize(multiplicandLength + multiplierLength);
 		for (std::size_t j = 0; j < multiplierLength; ++j) {
 			DigitPairType carry = 0;
 			for (std::size_t i = 0; i < multiplicandLength; ++i) {
@@ -35,7 +35,7 @@ public:
 			}
 			product.digits[multiplicandLength + j] = carry;
 		}
-		product.normalize();
+		product.trimMostSignificantDigit();
 		return std::move(product);
 	}
 

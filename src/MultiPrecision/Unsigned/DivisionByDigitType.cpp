@@ -25,29 +25,23 @@ public:
 
 	Unsigned::DivisionResult getQuotientAndRemainder()
 	{
-		if (remainder.digits.size() > 1 || (remainder.digits.size() == 1 && remainder.digits.front() >= divisor)) {
-			loopOverQuotientDigits();
-		}
-		quotient.normalize();
-		remainder.normalize();
+		loopOverQuotientDigits();
+		quotient.trimMostSignificantDigit();
+		remainder.digits.resize(1);
 		return Unsigned::DivisionResult({std::move(quotient), std::move(remainder)});
 	}
 
 	Unsigned getQuotient()
 	{
-		if (remainder.digits.size() > 1 || (remainder.digits.size() == 1 && remainder.digits.front() >= divisor)) {
-			loopOverQuotientDigits();
-		}
-		quotient.normalize();
+		loopOverQuotientDigits();
+		quotient.trimMostSignificantDigit();
 		return std::move(quotient);
 	}
 
 	Unsigned getRemainder()
 	{
-		if (remainder.digits.size() > 1 || (remainder.digits.size() == 1 && remainder.digits.front() >= divisor)) {
-			loopOverQuotientDigits();
-		}
-		remainder.normalize();
+		loopOverQuotientDigits();
+		remainder.digits.resize(1);
 		return std::move(remainder);
 	}
 

@@ -61,7 +61,6 @@ private:
 Unsigned& Unsigned::operator>>=(std::size_t bits)
 {
 	RightShift(digits, digits, bits).shiftBitsInDigits<true>();
-	normalize();
 	return *this;
 }
 
@@ -69,7 +68,6 @@ Unsigned operator>>(const Unsigned& n, std::size_t bits)
 {
 	Unsigned result;
 	Unsigned::RightShift(n.digits, result.digits, bits).shiftBitsInDigits<false>();
-	result.normalize();
 	return result;
 }
 

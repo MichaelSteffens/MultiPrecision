@@ -239,9 +239,17 @@ Unsigned& Unsigned::resize(std::size_t numberOfDigits)
 	return *this;
 }
 
-void Unsigned::normalize()
+Unsigned& Unsigned::trim()
 {
 	while (!digits.empty() && !digits.back()) {
+		digits.pop_back();
+	}
+	return *this;
+}
+
+void Unsigned::trimMostSignificantDigit()
+{
+	if (!digits.empty() && !digits.back()) {
 		digits.pop_back();
 	}
 }
