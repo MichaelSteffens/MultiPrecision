@@ -13,7 +13,7 @@ Unsigned pow(const Unsigned& base, const Unsigned& exponent, const Unsigned& mod
 {
 	Unsigned power(1);
 	Unsigned multiplier(base);
-	for (auto i : exponent.bitRange()) {
+	for (auto i : exponent.minimalBitRange()) {
 		if (i) {
 			power = power * multiplier % modulus;
 		}

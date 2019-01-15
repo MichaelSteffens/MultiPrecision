@@ -23,8 +23,8 @@ public:
 	static_assert(std::is_unsigned<DigitType>::value);
 
 	class BitRange;
+	class MinimalBitRange;
 	class FullBitRange;
-	class ConstBitIterator;
 	struct DivisionResult;
 
 	Unsigned();
@@ -60,7 +60,7 @@ public:
 	std::string toHexadecimalString(bool uppercase = false) const;
 	std::string toOctalString() const;
 	bool isZero() const noexcept;
-	BitRange bitRange() const noexcept;
+	MinimalBitRange minimalBitRange() const noexcept;
 	FullBitRange fullBitRange() const noexcept;
 	std::size_t mostSignificantBitPosition() const noexcept;
 
@@ -120,41 +120,51 @@ struct Unsigned::DivisionResult
 class Unsigned::BitRange
 {
 public:
-	typedef ConstBitIterator const_iterator;
+	class ConstIterator;
 
-	explicit BitRange(const Unsigned& number);
-	ConstBitIterator begin() const;
-	ConstBitIterator end() const;
-
-private:
-	const Unsigned& number;
+	virtual ~BitRange()
+	{
+	}
+	virtual ConstIterator begin() const = 0;
+	virtual ConstIterator end() const = 0;
 };
 
-class Unsigned::FullBitRange
+class Unsigned::BitRange::ConstIterator
 {
 public:
-	typedef ConstBitIterator const_iterator;
-
-	explicit FullBitRange(const Unsigned& number);
-	ConstBitIterator begin() const;
-	ConstBitIterator end() const;
-
-private:
-	const Unsigned& number;
-};
-
-class Unsigned::ConstBitIterator
-{
-public:
-	ConstBitIterator(const decltype(Unsigned::digits)& digits, std::size_t i, DigitType mask);
-	ConstBitIterator& operator++();
+	ConstIterator(const decltype(Unsigned::digits)& digits, std::size_t digitPosition, DigitType mask);
+	ConstIterator& operator++();
 	bool operator*() const noexcept;
-	friend bool operator!=(const ConstBitIterator& lhs, const ConstBitIterator& rhs) noexcept;
+	friend bool operator!=(const ConstIterator& lhs, const ConstIterator& rhs) noexcept;
 
 private:
-	const decltype(Unsigned::digits)& digits;
-	std::size_t i;
+	const decltype(Unsigned::digits)* digits;
+	std::size_t digitPosition;
 	DigitType mask;
+};
+
+class Unsigned::FullBitRange : public Unsigned::BitRange
+{
+public:
+	explicit FullBitRange(const Unsigned& number);
+	~FullBitRange();
+	virtual ConstIterator begin() const override;
+	virtual ConstIterator end() const override;
+
+private:
+	const Unsigned* number;
+};
+
+class Unsigned::MinimalBitRange : public Unsigned::BitRange
+{
+public:
+	explicit MinimalBitRange(const Unsigned& number);
+	~MinimalBitRange();
+	virtual ConstIterator begin() const override;
+	virtual ConstIterator end() const override;
+
+private:
+	const Unsigned* number;
 };
 
 } // namespace MultiPrecision

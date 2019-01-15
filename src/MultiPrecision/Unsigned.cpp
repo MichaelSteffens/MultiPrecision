@@ -191,9 +191,9 @@ bool Unsigned::isZero() const noexcept
 	return digits.empty();
 }
 
-Unsigned::BitRange Unsigned::bitRange() const noexcept
+Unsigned::MinimalBitRange Unsigned::minimalBitRange() const noexcept
 {
-	return BitRange(*this);
+	return MinimalBitRange(*this);
 }
 
 Unsigned::FullBitRange Unsigned::fullBitRange() const noexcept

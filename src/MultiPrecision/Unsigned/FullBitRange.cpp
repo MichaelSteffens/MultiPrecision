@@ -10,33 +10,37 @@
 
 namespace MultiPrecision {
 
-Unsigned::FullBitRange::FullBitRange(const Unsigned& number) : number(number)
+Unsigned::FullBitRange::FullBitRange(const Unsigned& number) : number(&number)
 {
 }
 
-Unsigned::ConstBitIterator Unsigned::FullBitRange::begin() const
+Unsigned::FullBitRange::~FullBitRange()
+{
+}
+
+Unsigned::BitRange::ConstIterator Unsigned::FullBitRange::begin() const
 {
 	DigitType mask;
-	if (!number.digits.empty()) {
+	if (!number->digits.empty()) {
 		mask = 1;
 	} else {
 		mask = 0;
 	}
-	return ConstBitIterator(number.digits, 0, mask);
+	return ConstIterator(number->digits, 0, mask);
 }
 
-Unsigned::ConstBitIterator Unsigned::FullBitRange::end() const
+Unsigned::BitRange::ConstIterator Unsigned::FullBitRange::end() const
 {
-	std::size_t i;
+	std::size_t digitPosition;
 	DigitType mask;
-	if (!number.digits.empty()) {
-		i = number.digits.size();
+	if (!number->digits.empty()) {
+		digitPosition = number->digits.size();
 		mask = 1;
 	} else {
-		i = 0;
+		digitPosition = 0;
 		mask = 0;
 	}
-	return ConstBitIterator(number.digits, i, mask);
+	return ConstIterator(number->digits, digitPosition, mask);
 }
 
 } // namespace MultiPrecision
