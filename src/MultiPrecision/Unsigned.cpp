@@ -8,6 +8,7 @@
 #include "MultiPrecision/Unsigned.h"
 #include "MultiPrecision/DigitPairType.h"
 #include "MultiPrecision/InvalidCharacter.h"
+#include "MultiPrecision/Underflow.h"
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -220,6 +221,22 @@ std::size_t Unsigned::mostSignificantBitPosition() const noexcept
 		}
 	}
 	return bitPosition;
+}
+
+std::size_t Unsigned::numberOfDigits() const noexcept
+{
+	return digits.size();
+}
+
+Unsigned& Unsigned::resize(std::size_t numberOfDigits)
+{
+	for (std::size_t i = digits.size(); i-- > numberOfDigits;) {
+		if (digits[i]) {
+			throw Underflow("Unsigned::resize(std::size_t): new size too small!");
+		}
+	}
+	digits.resize(numberOfDigits);
+	return *this;
 }
 
 void Unsigned::normalize()

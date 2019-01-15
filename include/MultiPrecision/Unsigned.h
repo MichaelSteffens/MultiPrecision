@@ -63,6 +63,8 @@ public:
 	MinimalBitRange minimalBitRange() const noexcept;
 	FullBitRange fullBitRange() const noexcept;
 	std::size_t mostSignificantBitPosition() const noexcept;
+	std::size_t numberOfDigits() const noexcept;
+	Unsigned& resize(std::size_t numberOfDigits);
 
 private:
 	class AdditionOfUnsigned;

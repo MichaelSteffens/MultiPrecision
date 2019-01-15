@@ -481,161 +481,226 @@ TEST_CASE("Convert to octal string", "[unsigned]")
 	}
 }
 
+TEST_CASE("Number of digits", "[unsigned]")
+{
+	SECTION("Fitting size")
+	{
+		REQUIRE(
+			MultiPrecision::Unsigned("0xfeedbabefeedbabefeedbabefeedbabe").numberOfDigits() ==
+			128 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits);
+	}
+	SECTION("Overfull")
+	{
+		REQUIRE(
+			MultiPrecision::Unsigned("0xfeedbabefeedbabefeedbabefeedbabe")
+				.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits)
+				.numberOfDigits() == 256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits);
+	}
+}
+
 TEST_CASE("Operator ==", "[unsigned]")
 {
-	MultiPrecision::Unsigned testee("0xfeedbabe");
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
 	SECTION("LHS equal")
 	{
-		REQUIRE(testee == "0xfeedbabe");
+		REQUIRE(testee == "0xfeedbabefeedbabefeedbabefeedbabe");
 	}
-	SECTION("LHS not equal LHS")
+	SECTION("Not equal LHS")
 	{
-		REQUIRE_FALSE(testee == "0xbabefeed");
+		REQUIRE_FALSE(testee == "0xbabefeedbabefeedbabefeedbabefeed");
 	}
 	SECTION("Equal RHS")
 	{
-		REQUIRE("0xfeedbabe" == testee);
+		REQUIRE("0xfeedbabefeedbabefeedbabefeedbabe" == testee);
 	}
 	SECTION("Not equal RHS")
 	{
-		REQUIRE_FALSE("0xbabefeed" == testee);
+		REQUIRE_FALSE("0xbabefeedbabefeedbabefeedbabefeed" == testee);
+	}
+	SECTION("Overfull equal RHS")
+	{
+		REQUIRE(
+			testee.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits) ==
+			"0xfeedbabefeedbabefeedbabefeedbabe");
+	}
+	SECTION("LHS equal overfull")
+	{
+		REQUIRE(
+			"0xfeedbabefeedbabefeedbabefeedbabe" ==
+			testee.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits));
 	}
 }
 
 TEST_CASE("Operator !=", "[unsigned]")
 {
-	MultiPrecision::Unsigned testee("0xfeedbabe");
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
 	SECTION("LHS equal")
 	{
-		REQUIRE_FALSE(testee != "0xfeedbabe");
+		REQUIRE_FALSE(testee != "0xfeedbabefeedbabefeedbabefeedbabe");
 	}
 	SECTION("LHS not equal")
 	{
-		REQUIRE(testee != "0xbabefeed");
+		REQUIRE(testee != "0xbabefeedbabefeedbabefeedbabefeed");
 	}
 	SECTION("Equal RHS")
 	{
-		REQUIRE_FALSE("0xfeedbabe" != testee);
+		REQUIRE_FALSE("0xfeedbabefeedbabefeedbabefeedbabe" != testee);
 	}
 	SECTION("Not equal RHS")
 	{
-		REQUIRE("0xbabefeed" != testee);
+		REQUIRE("0xbabefeedbabefeedbabefeedbabefeed" != testee);
 	}
 }
 
 TEST_CASE("Operator <", "[unsigned]")
 {
-	MultiPrecision::Unsigned testee("0xfeedbabe");
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
 	SECTION("LHS less than")
 	{
-		REQUIRE(testee < "0xfeedbabf");
+		REQUIRE(testee < "0xfeedbabefeedbabefeedbabefeedbabf");
 	}
 	SECTION("LHS equal")
 	{
-		REQUIRE_FALSE(testee < "0xfeedbabe");
+		REQUIRE_FALSE(testee < "0xfeedbabefeedbabefeedbabefeedbabe");
 	}
 	SECTION("LHS greater than")
 	{
-		REQUIRE_FALSE(testee < "0xfeedbabd");
+		REQUIRE_FALSE(testee < "0xfeedbabefeedbabefeedbabefeedbabd");
 	}
 	SECTION("Less than RHS")
 	{
-		REQUIRE("0xfeedbabd" < testee);
+		REQUIRE("0xfeedbabefeedbabefeedbabefeedbabd" < testee);
 	}
 	SECTION("Equal RHS")
 	{
-		REQUIRE_FALSE("0xfeedbabe" < testee);
+		REQUIRE_FALSE("0xfeedbabefeedbabefeedbabefeedbabe" < testee);
 	}
 	SECTION("Greater than RHS")
 	{
-		REQUIRE_FALSE("0xfeedbabf" < testee);
+		REQUIRE_FALSE("0xfeedbabefeedbabefeedbabefeedbabf" < testee);
+	}
+	SECTION("Overfull LHS less than")
+	{
+		REQUIRE(
+			testee.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits) <
+			"0xfeedbabefeedbabefeedbabefeedbabf");
+	}
+	SECTION("Less than overfullRHS")
+	{
+		REQUIRE(
+			"0xfeedbabefeedbabefeedbabefeedbabd" <
+			testee.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits));
 	}
 }
 
 TEST_CASE("Operator <=", "[unsigned]")
 {
-	MultiPrecision::Unsigned testee("0xfeedbabe");
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
 	SECTION("LHS less than")
 	{
-		REQUIRE(testee <= "0xfeedbabf");
+		REQUIRE(testee <= "0xfeedbabefeedbabefeedbabefeedbabf");
 	}
 	SECTION("LHS equal")
 	{
-		REQUIRE(testee <= "0xfeedbabe");
+		REQUIRE(testee <= "0xfeedbabefeedbabefeedbabefeedbabe");
 	}
 	SECTION("LHS greater than")
 	{
-		REQUIRE_FALSE(testee <= "0xfeedbabd");
+		REQUIRE_FALSE(testee <= "0xfeedbabefeedbabefeedbabefeedbabd");
 	}
 	SECTION("Less than RHS")
 	{
-		REQUIRE("0xfeedbabd" <= testee);
+		REQUIRE("0xfeedbabefeedbabefeedbabefeedbabd" <= testee);
 	}
 	SECTION("Equal RHS")
 	{
-		REQUIRE("0xfeedbabe" <= testee);
+		REQUIRE("0xfeedbabefeedbabefeedbabefeedbabe" <= testee);
 	}
 	SECTION("Greater than RHS")
 	{
-		REQUIRE_FALSE("0xfeedbabf" <= testee);
+		REQUIRE_FALSE("0xfeedbabefeedbabefeedbabefeedbabf" <= testee);
+	}
+	SECTION("Overfull LHS less than")
+	{
+		REQUIRE(
+			testee.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits) <=
+			"0xfeedbabefeedbabefeedbabefeedbabf");
+	}
+	SECTION("Overfull LHS equal")
+	{
+		REQUIRE(
+			testee.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits) <=
+			"0xfeedbabefeedbabefeedbabefeedbabe");
+	}
+	SECTION("Less than overfull RHS")
+	{
+		REQUIRE(
+			"0xfeedbabefeedbabefeedbabefeedbabd" <=
+			testee.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits));
+	}
+	SECTION("Equal overfull RHS")
+	{
+		REQUIRE(
+			"0xfeedbabefeedbabefeedbabefeedbabe" <=
+			testee.resize(256 / std::numeric_limits<MultiPrecision::Unsigned::DigitType>::digits));
 	}
 }
 
 TEST_CASE("Operator >", "[unsigned]")
 {
-	MultiPrecision::Unsigned testee("0xfeedbabe");
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
 	SECTION("LHS less than")
 	{
-		REQUIRE_FALSE(testee > "0xfeedbabf");
+		REQUIRE_FALSE(testee > "0xfeedbabefeedbabefeedbabefeedbabf");
 	}
 	SECTION("LHS equal")
 	{
-		REQUIRE_FALSE(testee > "0xfeedbabe");
+		REQUIRE_FALSE(testee > "0xfeedbabefeedbabefeedbabefeedbabe");
 	}
 	SECTION("LHS greater than")
 	{
-		REQUIRE(testee > "0xfeedbabd");
+		REQUIRE(testee > "0xfeedbabefeedbabefeedbabefeedbabd");
 	}
 	SECTION("Less than RHS")
 	{
-		REQUIRE_FALSE("0xfeedbabd" > testee);
+		REQUIRE_FALSE("0xfeedbabefeedbabefeedbabefeedbabd" > testee);
 	}
 	SECTION("Equal RHS")
 	{
-		REQUIRE_FALSE("0xfeedbabe" > testee);
+		REQUIRE_FALSE("0xfeedbabefeedbabefeedbabefeedbabe" > testee);
 	}
 	SECTION("Greater than RHS")
 	{
-		REQUIRE("0xfeedbabf" > testee);
+		REQUIRE("0xfeedbabefeedbabefeedbabefeedbabf" > testee);
 	}
 }
 
 TEST_CASE("Operator >=", "[unsigned]")
 {
-	MultiPrecision::Unsigned testee("0xfeedbabe");
+	MultiPrecision::Unsigned testee("0xfeedbabefeedbabefeedbabefeedbabe");
 	SECTION("LHS less than")
 	{
-		REQUIRE_FALSE(testee >= "0xfeedbabf");
+		REQUIRE_FALSE(testee >= "0xfeedbabefeedbabefeedbabefeedbabf");
 	}
 	SECTION("LHS equal")
 	{
-		REQUIRE(testee >= "0xfeedbabe");
+		REQUIRE(testee >= "0xfeedbabefeedbabefeedbabefeedbabe");
 	}
 	SECTION("LHS greater than")
 	{
-		REQUIRE(testee >= "0xfeedbabd");
+		REQUIRE(testee >= "0xfeedbabefeedbabefeedbabefeedbabd");
 	}
 	SECTION("Less than RHS")
 	{
-		REQUIRE_FALSE("0xfeedbabd" >= testee);
+		REQUIRE_FALSE("0xfeedbabefeedbabefeedbabefeedbabd" >= testee);
 	}
 	SECTION("Equal RHS")
 	{
-		REQUIRE("0xfeedbabe" >= testee);
+		REQUIRE("0xfeedbabefeedbabefeedbabefeedbabe" >= testee);
 	}
 	SECTION("Greater than RHS")
 	{
-		REQUIRE("0xfeedbabf" >= testee);
+		REQUIRE("0xfeedbabefeedbabefeedbabefeedbabf" >= testee);
 	}
 }
 

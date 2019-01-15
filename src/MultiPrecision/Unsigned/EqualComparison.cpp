@@ -16,16 +16,24 @@ public:
 		lhs(lhs),
 		rhs(rhs),
 		lhsLength(lhs.size()),
-		rhsLength(rhs.size())
+		rhsLength(rhs.size()),
+		minLength(std::min(lhsLength, rhsLength))
 	{
 	}
 
 	bool compareDigits() noexcept
 	{
-		if (lhsLength != rhsLength) {
-			return false;
+		for (std::size_t i = lhsLength; i-- > minLength;) {
+			if (lhs[i]) {
+				return false;
+			}
 		}
-		for (std::size_t i = lhsLength; i-- > 0;) {
+		for (std::size_t i = rhsLength; i-- > minLength;) {
+			if (rhs[i]) {
+				return false;
+			}
+		}
+		for (std::size_t i = minLength; i-- > 0;) {
 			if (lhs[i] != rhs[i]) {
 				return false;
 			}
@@ -38,6 +46,7 @@ private:
 	const decltype(Unsigned::digits)& rhs;
 	const std::size_t lhsLength;
 	const std::size_t rhsLength;
+	const std::size_t minLength;
 };
 
 bool operator==(const Unsigned& lhs, const Unsigned& rhs) noexcept
