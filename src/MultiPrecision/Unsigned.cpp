@@ -149,10 +149,10 @@ std::string Unsigned::toDecimalString() const
 {
 	std::vector<char> buffer;
 	DivisionResult divisionResult = dividedBy(10);
-	buffer.push_back(divisionResult.remainder.digits.empty() ? '0' : divisionResult.remainder.digits.front() + '0');
-	while (!divisionResult.quotient.digits.empty()) {
+	buffer.push_back(divisionResult.remainder.isZero() ? '0' : divisionResult.remainder.digits.front() + '0');
+	while (!divisionResult.quotient.isZero()) {
 		divisionResult = divisionResult.quotient.dividedBy(10);
-		buffer.push_back(divisionResult.remainder.digits.empty() ? '0' : divisionResult.remainder.digits.front() + '0');
+		buffer.push_back(divisionResult.remainder.isZero() ? '0' : divisionResult.remainder.digits.front() + '0');
 	}
 	return std::string(buffer.rbegin(), buffer.rend());
 }
@@ -161,11 +161,11 @@ std::string Unsigned::toHexadecimalString(bool uppercase) const
 {
 	std::vector<char> buffer;
 	const char a = uppercase ? 'A' : 'a';
-	DigitType remainder = digits.empty() ? 0 : digits.front() & 0xf;
+	DigitType remainder = isZero() ? 0 : digits.front() & 0xf;
 	Unsigned quotient = *this >> 4;
 	buffer.push_back(remainder < 10 ? '0' + remainder : a + remainder - 10);
-	while (!quotient.digits.empty()) {
-		remainder = quotient.digits.empty() ? 0 : quotient.digits.front() & 0xf;
+	while (!quotient.isZero()) {
+		remainder = quotient.isZero() ? 0 : quotient.digits.front() & 0xf;
 		quotient >>= 4;
 		buffer.push_back(remainder < 10 ? '0' + remainder : a + remainder - 10);
 	}
@@ -175,11 +175,11 @@ std::string Unsigned::toHexadecimalString(bool uppercase) const
 std::string Unsigned::toOctalString() const
 {
 	std::vector<char> buffer;
-	DigitType remainder = digits.empty() ? 0 : digits.front() & 0x7;
+	DigitType remainder = isZero() ? 0 : digits.front() & 0x7;
 	Unsigned quotient = *this >> 3;
 	buffer.push_back('0' + remainder);
-	while (!quotient.digits.empty()) {
-		remainder = quotient.digits.empty() ? 0 : quotient.digits.front() & 0x7;
+	while (!quotient.isZero()) {
+		remainder = quotient.isZero() ? 0 : quotient.digits.front() & 0x7;
 		quotient >>= 3;
 		buffer.push_back('0' + remainder);
 	}
@@ -188,7 +188,14 @@ std::string Unsigned::toOctalString() const
 
 bool Unsigned::isZero() const noexcept
 {
-	return digits.empty();
+	bool result = true;
+	for (auto i = digits.rbegin(); i != digits.rend(); ++i) {
+		if (*i) {
+			result = false;
+			break;
+		}
+	}
+	return result;
 }
 
 Unsigned::MinimalBitRange Unsigned::minimalBitRange() const noexcept
